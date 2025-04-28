@@ -1,0 +1,19 @@
+{
+  "name": "ts-playwright",
+  "version": "1.0.0",
+  "description": "automated software testing with Playwright",
+  "main": "index.js",
+  "scripts": {
+    "tests:chrome" : "playwright test --config=playwright.config.ts --project=Chrome",
+    "tests:firefox" : "playwright test --config=playwright.config.ts --project=Firefox",
+    "tests:webkit" : "playwright test --config=playwright.config.ts --project=Webkit",
+    "tests:all" : "playwright test --config=playwright.config.ts",
+    "tests:e2e": "playwright test --config=e2e.config.ts "
+     },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@playwright/test": "^1.51.1",
+    "prettier": "^3.5.3"
+  }
+}
