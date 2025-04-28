@@ -16,10 +16,7 @@ test.describe.parallel("Login-logout flow", () => {
         await page.locator('#user_password').fill('password');
         await page.locator('.btn-primary').click();
         await page.goto(baseURL + '/bank/transfer-funds.html');
-        await expect(page.url()).toContain('/bank/transfer-funds.html');
-        
-       
-        
+        await expect(page.url()).toContain('/bank/transfer-funds.html');      
     })
 
     
