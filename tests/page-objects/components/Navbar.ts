@@ -1,9 +1,9 @@
 import {Page, expect, Locator} from '@playwright/test';
-import {baseURL} from '../../../playwright.config';
+import { AbstractPage } from '../AbstractPage';
 
-export class Navbar {
+export class Navbar extends AbstractPage{
 
-readonly page: Page;
+
 readonly accountSummary: Locator;
 readonly accountActivity: Locator;
 readonly transferFunds: Locator;
@@ -12,7 +12,7 @@ readonly myMoneyApp: Locator;
 readonly onlineStatements: Locator;
 
 constructor(page: Page) {
-this.page = page;
+    super(page);
 this.accountSummary = page.locator('#account_summary_tab');
 this.accountActivity = page.locator('#account_activity_tab');
 this.transferFunds = page.locator('#transfer_funds_tab');

@@ -1,8 +1,9 @@
 import {Page, expect, Locator} from '@playwright/test';
 import {baseURL} from '../../playwright.config'
+import {AbstractPage} from './AbstractPage';
 
-export class HomePage {
-    readonly page: Page;
+export class HomePage extends AbstractPage {
+    
     readonly transferFundsButton: Locator;
     readonly payBillsButton: Locator;
     readonly accountSummaryButton: Locator;
@@ -12,7 +13,7 @@ export class HomePage {
     readonly searchBox: Locator;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.transferFundsButton = page.locator(`text=Transfer Funds`);
         this.payBillsButton = page.locator(`text=Pay Bills`);
         this.accountSummaryButton = page.locator(`text=Account Summary`);

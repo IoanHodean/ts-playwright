@@ -1,9 +1,9 @@
 import {Page, expect, Locator} from '@playwright/test';
-import {baseURL} from '../../playwright.config';
+import { AbstractPage } from './AbstractPage';
 
-export class PaymentPage{
 
-    readonly page: Page;
+export class PaymentPage extends AbstractPage{
+
     readonly payee: Locator;
     readonly account: Locator;
     readonly amount: Locator;
@@ -14,7 +14,7 @@ export class PaymentPage{
     readonly errorMessage: Locator;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.payee = page.locator('#sp_payee');
         this.account = page.locator('#sp_account');
         this.amount = page.locator('#sp_amount');

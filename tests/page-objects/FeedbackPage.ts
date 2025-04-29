@@ -1,8 +1,9 @@
 import {Page, expect, Locator} from '@playwright/test';
 import {baseURL} from '../../playwright.config'
+import {AbstractPage} from './AbstractPage';
 
-export class FeedbackPage {
-    readonly page: Page;
+export class FeedbackPage extends AbstractPage {
+  
     readonly nameField: Locator;
     readonly emailField: Locator;
     readonly subjectField: Locator;
@@ -12,7 +13,7 @@ export class FeedbackPage {
     readonly feedbackTitle: Locator;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
         this.nameField = page.locator('#name');
         this.emailField = page.locator('#email');
         this.subjectField = page.locator('#subject');
