@@ -1,16 +1,18 @@
 import {test, expect} from '@playwright/test';
 import { baseURL } from '../../playwright.config';
+import { HomePage } from '../page-objects/HomePage';
+let homePage: HomePage;
 
 test.describe.parallel("Search functionality", () => {
     //Before hook
     test.beforeEach(async ({ page }) => {
+        homePage = new HomePage(page);
         await page.goto(baseURL);
     })
 
     // Test case 1: Search for a valid product
     test('Search for a valid product', async ({ page }) => {
-        await page.locator('#searchTerm').fill('bank');
-        await page.keyboard.press('Enter');
-        await expect(page.locator('li>a')).toHaveCount(2);
+       await homePage.inputSearchTerm('bank');
+        await homePage.validSearchResult();        
     })   
 })
