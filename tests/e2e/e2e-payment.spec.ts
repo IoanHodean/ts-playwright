@@ -1,27 +1,31 @@
 import {test, expect} from '@playwright/test';
 import { baseURL } from '../../playwright.config';
+import {LoginPage} from '../page-objects/LoginPage';
+import { PaymentPage} from '../page-objects/PaymentPage';
+import {Navbar} from '../page-objects/components/Navbar';
 
-test.describe.parallel("New Payment", () => {
+let loginPage: LoginPage;
+let paymentPage: PaymentPage;
+let navbar: Navbar;
+
+
+test.describe.only("New Payment", () => {
     //Before hook
     test.beforeEach(async ({ page }) => {
-        await page.goto(baseURL+'/login.html');       
-        await page.locator('#user_login').fill('username');
-        await page.locator('#user_password').fill('password');
-        await page.locator('.btn-primary').click();
+        paymentPage = new PaymentPage(page);
+        loginPage = new LoginPage(page);
+        navbar = new Navbar(page);
+        await loginPage.navigate();
+        await loginPage.login('username', 'password');
+        //this is needed because the webpage has SSH certificate issues 
         await page.goto(baseURL + '/bank/transfer-funds.html');
         
     })
     
     test('Verify payment with valid data', async ({ page }) => {
-        await page.click('#pay_bills_tab')
-        await page.locator('#sp_payee').selectOption('apple')
-        await page.locator('#sp_account').selectOption('6')
-        await page.locator('#sp_amount').fill('1000')
-        await page.locator('#sp_date').fill('2023-10-01')
-        await page.locator('#sp_description').fill('Test payment')
-        await page.click('#pay_saved_payees')
-        const successMessage = await page.locator('.alert-success')
-        await expect(await page.locator('#alert_content')).toHaveText('The payment was successfully submitted.')
-        await expect(successMessage).toBeVisible()
+        await navbar.clickOnTab('Pay Bills');
+        await paymentPage.submitForm('Apple', '6', '1000', '2023-10-01', 'Test payment');
+        await paymentPage.verifySuccessMessage();
+        
     })
 })
