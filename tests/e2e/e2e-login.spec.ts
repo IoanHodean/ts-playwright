@@ -1,20 +1,21 @@
 import { test,expect } from "@playwright/test";
 import { baseURL } from '../../playwright.config';
+import { LoginPage } from "../page-objects/LoginPage";
 
 
 
 test.describe.parallel("Login-logout flow", () => {  
+    let loginPage: LoginPage;
+
     //Before hook
     test.beforeEach(async ({ page }) => {
-        await page.goto(baseURL);
+        loginPage = new LoginPage(page);
+        await loginPage.navigate();
     })
 
     // Test case 1: Login with valid credentials
     test('Login with valid credentials', async ({ page }) => {
-        await page.click(`#signin_button`);
-        await page.locator('#user_login').fill('username');
-        await page.locator('#user_password').fill('password');
-        await page.locator('.btn-primary').click();
+       await loginPage.login('username', 'password');    
         await page.goto(baseURL + '/bank/transfer-funds.html');
         await expect(page.url()).toContain('/bank/transfer-funds.html');      
     })
@@ -22,10 +23,7 @@ test.describe.parallel("Login-logout flow", () => {
     
 // Test case 2: Login with invalid credentials
 test('Login with invalid credentials', async ({ page }) => {
-    await page.click(`#signin_button`);
-    await page.locator('#user_login').fill('username');
-    await page.locator('#user_password').fill('wrongpassword');
-    await page.locator('.btn-primary').click();
-    await expect(page.locator('.alert-error')).toBeVisible();
+    await loginPage.login('invalidUser', 'invalidPassword');    
+    await loginPage.assertErrorMessage();
 })
 });
