@@ -11,7 +11,7 @@ test.describe.parallel("Filter Transactions", () => {
         await page.goto(baseURL + '/bank/transfer-funds.html');
         
     })
-    test.skip('Verify results for each account', async ({ page }) => {
+    test('Verify results for each account', async ({ page }) => {
          await page.click('#account_activity_tab')
             await page.selectOption('#aa_accountId', '2')
             const checkingAccount = await page.locator(
