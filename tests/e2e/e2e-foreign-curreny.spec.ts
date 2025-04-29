@@ -1,15 +1,17 @@
 import {test, expect} from '@playwright/test';
 import { baseURL } from '../../playwright.config';
+import {LoginPage} from '../../tests/page-objects/LoginPage';
+
+let loginPage: LoginPage;
 
 test.describe.parallel("Foreign Currency", () => {
     //Before hook
     test.beforeEach(async ({ page }) => {
-        await page.goto(baseURL+'/login.html');       
-        await page.locator('#user_login').fill('username');
-        await page.locator('#user_password').fill('password');
-        await page.locator('.btn-primary').click();
-        await page.goto(baseURL + '/bank/transfer-funds.html');
-        
+       loginPage = new LoginPage(page);
+             await loginPage.navigate();
+             await loginPage.login('username', 'password');
+             //this is needed because the webpage has SSH certificate issues
+             await page.goto(baseURL + '/bank/transfer-funds.html');
     })
     test('Verify foreign currency exchange rate', async ({ page }) => {
          await page.click('#pay_bills_tab');
