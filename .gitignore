@@ -50,5 +50,3 @@ videos/
 trace.zip
 
 #results of the tests
-test-results/
-tests/visual/visual.spec.ts-snapshots/
