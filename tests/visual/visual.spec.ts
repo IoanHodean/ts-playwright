@@ -13,5 +13,14 @@ test.describe('Visual Testing', () => {
         await expect(screenshot).toMatchSnapshot('homepage.png');
    
     });
+    test('Element Snapshot', async () => {
+        let moreServices= await page.$('id=online-banking'); // Replace with your element selector
+        if (moreServices) {
+            const screenshot = await moreServices.screenshot();
+            await expect(screenshot).toMatchSnapshot(`${moreServices}.png`);
+        } else {
+           // throw new Error('Element not found');
+        }
+    })
 })
 
