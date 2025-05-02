@@ -1,6 +1,6 @@
 import {test, expect} from '@playwright/test';
 import { baseURL } from '../../playwright.config';
-import { FeedbackPage } from '../page-objects/FeedbackPage';
+import { FeedbackPage } from '../../page-objects/FeedbackPage';
 
 let feedbackPage: FeedbackPage;
 

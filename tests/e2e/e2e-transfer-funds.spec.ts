@@ -1,8 +1,8 @@
 import {test, expect} from '@playwright/test';
 import { baseURL } from '../../playwright.config';
-import {LoginPage} from '../page-objects/LoginPage';
-import {TransferPage} from '../page-objects/TransferPage';
-import {Navbar} from '../page-objects/components/Navbar';
+import {LoginPage} from '../../page-objects/LoginPage';
+import {TransferPage} from '../../page-objects/TransferPage';
+import {Navbar} from '../../page-objects/components/Navbar';
 
 
 let loginPage: LoginPage;

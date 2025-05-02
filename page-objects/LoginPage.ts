@@ -1,5 +1,5 @@
 import {Locator, expect, Page} from '@playwright/test';
-import {baseURL} from '../../playwright.config';
+import {baseURL} from '../playwright.config';
 import {AbstractPage} from './AbstractPage';
 
 export class LoginPage extends AbstractPage {
