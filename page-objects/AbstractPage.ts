@@ -1,5 +1,5 @@
 import { Page, expect } from '@playwright/test';
-import { baseURL } from '../../playwright.config';
+import { baseURL } from '../playwright.config';
 
 export class AbstractPage {
     readonly page: Page;
