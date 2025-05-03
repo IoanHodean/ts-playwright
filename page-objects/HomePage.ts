@@ -42,4 +42,13 @@ export class HomePage extends AbstractPage {
     async validSearchResult() {
         await expect(this.page.locator('li>a')).toHaveCount(2);
     }
+    async pageSnapshot() {
+        const screenshot = await this.page.screenshot();
+        await expect(screenshot).toMatchSnapshot('homepage.png');
+    }
+    async searchResultSnapshot() {
+        const searchResult = await this.page.locator('h2').screenshot();
+        await expect(searchResult).toMatchSnapshot('search-result.png');
+    }
+
 }
