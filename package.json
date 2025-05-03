@@ -9,7 +9,8 @@
     "tests:webkit": "playwright test --config=playwright.config.ts --project=Webkit",
     "tests:all": "playwright test --config=playwright.config.ts",
     "tests:e2e": "playwright test --config=e2e.config.ts",
-    "tests:visual": "playwright test --config=visual.config.ts"
+    "tests:visual": "playwright test --config=visual.config.ts",
+    "tests:api": "playwright test --config=api.config.ts"
   },
   "author": "",
   "license": "ISC",
