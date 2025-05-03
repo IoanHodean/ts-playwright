@@ -48,4 +48,26 @@ async clickOnTab(tabName:string){
 }
 }
 
+async captureNavbarState(activeTab: string) {
+    await this.clickOnTab(activeTab);
+    const navbar = await this.page.locator('.nav-tabs').screenshot();
+    await expect(navbar).toMatchSnapshot(`navbar-${activeTab.toLowerCase().replace(' ', '-')}.png`);
+}
+
+async compareAllNavStates() {
+    const tabs = [
+        'Account Summary',
+        'Account Activity',
+        'Transfer Funds',
+        'Pay Bills',
+        'My Money Map',
+        'Online Statements'
+    ];
+
+    for (const tab of tabs) {
+        await this.captureNavbarState(tab);
+        // Add wait for animation/transition to complete
+        await this.page.waitForTimeout(500);
+    }
+}
 }
