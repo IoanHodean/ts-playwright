@@ -113,3 +113,61 @@ test ('DELETE request to delete user', async ({request}) => {
     expect (response.status()).toBe(204);        
 });
 });
+test.describe.parallel.only('Tests without authentication', () => {
+test ('Testing GET endpoint without authentication', async ({request}) => {
+    const response= await request.get(`${baseURL}/users`, {
+        headers: {
+          'x-api-key': '',
+        }
+    });
+        expect (response.status()).toBe(401);              
+    });
+    test ('Testing POST endpoint without authentication', async ({request}) => {
+        const response= await request.post(`${baseURL}/users`, {
+            headers: {
+              'x-api-key': '',
+            },
+            
+            data: {
+                name: 'John Doe',
+                job: 'Software Engineer'
+            }
+        });   
+        expect (response.status()).toBe(401);
+    });
+    test ('Testing PUT endpoint without authentication', async ({request}) => {
+        const response= await request.put(`${baseURL}/users/2`, {
+            headers: {
+              'x-api-key': '',
+            },
+            
+            data: {
+                name: 'John Doe',
+                job: 'Senior Software Engineer'
+            }
+        });   
+        expect (response.status()).toBe(401);
+    });
+    test ('Testing PATCH endpoint without authentication', async ({request}) => {
+        const response= await request.patch(`${baseURL}/users/2`, {
+            headers: {
+              'x-api-key': '',
+            },
+            
+            data: {
+                name: 'John Doe',
+                job: 'Senior Software Engineer'
+            }
+        });   
+        expect (response.status()).toBe(401);
+    }
+    );
+    test ('Testing DELETE endpoint without authentication', async ({request}) => {
+        const response= await request.delete(`${baseURL}/users/2`, {
+            headers: {
+              'x-api-key': '',
+            }
+        });   
+        expect (response.status()).toBe(401);
+    });  
+    });
