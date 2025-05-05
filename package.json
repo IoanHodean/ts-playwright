@@ -10,7 +10,8 @@
     "tests:all": "playwright test --config=playwright.config.ts",
     "tests:e2e": "playwright test --config=e2e.config.ts",
     "tests:visual": "playwright test --config=visual.config.ts",
-    "tests:api": "playwright test --config=api.config.ts"
+    "tests:api": "playwright test --config=api.config.ts",
+    "jenkins-server": "java -jar jenkins.war --httpPort=8080 --enable-future-java"
   },
   "author": "",
   "license": "ISC",

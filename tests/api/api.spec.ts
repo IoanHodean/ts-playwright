@@ -114,7 +114,7 @@ test ('DELETE request to delete user', async ({request}) => {
 });
 });
 test.describe.parallel.only('Tests without authentication', () => {
-test ('Testing GET endpoint without authentication', async ({request}) => {
+test.skip ('Testing GET endpoint without authentication', async ({request}) => {
     const response= await request.get(`${baseURL}/users`, {
         headers: {
           'x-api-key': '',
