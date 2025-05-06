@@ -13,7 +13,7 @@ test.describe.parallel("Login-logout flow", () => {
 
     // Test case 1: Login with valid credentials
     test('Login with valid credentials', async ({ page }) => {
-       await loginPage.login('username', 'password');    
+       await loginPage.login();    
         await page.goto(baseURL + '/bank/transfer-funds.html');
         await expect(page.url()).toContain('/bank/transfer-funds.html');      
     })
@@ -21,7 +21,7 @@ test.describe.parallel("Login-logout flow", () => {
     
 // Test case 2: Login with invalid credentials
 test('Login with invalid credentials', async ({ page }) => {
-    await loginPage.login('invalidUser', 'invalidPassword');    
+    await loginPage.login("invalidUser", "invalidPassword");    
     await loginPage.assertErrorMessage();
 })
 });

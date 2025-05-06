@@ -9,7 +9,7 @@ test.describe.parallel("Filter Transactions", () => {
     test.beforeEach(async ({ page }) => {
       loginPage = new LoginPage(page);
       await loginPage.navigate();
-      await loginPage.login('username', 'password');
+      await loginPage.login();
       //this is needed because the webpage has SSH certificate issues
       await page.goto(baseURL + '/bank/transfer-funds.html');
     })

@@ -21,6 +21,9 @@ const config: PlaywrightTestConfig = {
         launchOptions: {
         slowMo: 50,
         },
+        extraHTTPHeaders: {
+            'Authorization': `Basic ${process.env.TEST_USER}:${process.env.TEST_PASSWORD}`
+        }
     },
     projects: [
         {

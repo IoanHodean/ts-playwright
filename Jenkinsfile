@@ -7,17 +7,17 @@ pipeline {
 
     parameters {
         booleanParam(
-            name: 'API tests',
+            name: 'RUN_API',
             defaultValue: true,
             description: 'Run API tests'
         )
         booleanParam(
-            name: 'Visual Regression tests',
+            name: 'RUN_VISUAL',
             defaultValue: true,
             description: 'Run visual regression tests'
         )
         booleanParam(
-            name: 'E2E tests',
+            name: 'RUN_E2E',
             defaultValue: true,
             description: 'Run E2E tests'
         )

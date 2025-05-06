@@ -2,6 +2,8 @@ import {Locator, expect, Page} from '@playwright/test';
 import {baseURL} from '../playwright.config';
 import {AbstractPage} from './AbstractPage';
 import { snapshot } from 'node:test';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export class LoginPage extends AbstractPage {
     
@@ -24,9 +26,12 @@ export class LoginPage extends AbstractPage {
         await this.page.goto(`${baseURL}/login.html`);
     }
 
-    async login(username: string, password: string) {
-        await this.usernameInput.fill(username);
-        await this.passwordInput.fill(password);
+    async login(username?: string, password?: string) {
+        const finalUsername = username || process.env.TEST_USER || 'default_username';
+        const finalPassword = password || process.env.TEST_PASSWORD || 'default_password';
+        
+        await this.usernameInput.fill(finalUsername);
+        await this.passwordInput.fill(finalPassword);
         await this.loginButton.click();
     }
 
