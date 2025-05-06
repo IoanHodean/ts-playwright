@@ -24,6 +24,11 @@ pipeline {
         }
 
         stage('Generate Auth Token') {
+            when {
+                allOf {
+                    expression { return false }  // Explicitly return false
+                }
+            }
             steps {
                 bat 'npx playwright test tests/setup/auth.setup.ts'
             }
