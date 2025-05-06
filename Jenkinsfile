@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'Node18'
+        nodejs 'NodeJS18'  // Match the exact name from Jenkins configuration
     }
 
     environment {
@@ -11,6 +11,12 @@ pipeline {
     }
  
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Setup') {
             steps {
                 // Clean workspace
@@ -30,20 +36,24 @@ pipeline {
         }
 
         stage('Run Tests') {
-            parallel {
-                stage('API Tests') {
-                    steps {
-                        bat 'npx playwright test tests/api --config=api.config.ts'
-                    }
-                }
-                stage('Visual Tests') {
-                    steps {
-                        bat 'npx playwright test tests/visual --config=visual.config.ts'
-                    }
-                }
-                stage('E2E Tests') {
-                    steps {
-                        bat 'npx playwright test tests/e2e --config=playwright.config.ts'
+            steps {
+                node {
+                    parallel {
+                        stage('API Tests') {
+                            steps {
+                                bat 'npx playwright test tests/api --config=api.config.ts'
+                            }
+                        }
+                        stage('Visual Tests') {
+                            steps {
+                                bat 'npx playwright test tests/visual --config=visual.config.ts'
+                            }
+                        }
+                        stage('E2E Tests') {
+                            steps {
+                                bat 'npx playwright test tests/e2e --config=playwright.config.ts'
+                            }
+                        }
                     }
                 }
             }
@@ -52,19 +62,23 @@ pipeline {
 
     post {
         always {
-            publishHTML([
-                allowMissing: false,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'playwright-report',
-                reportFiles: 'index.html',
-                reportName: 'Playwright Report'
-            ])
-            
-            archiveArtifacts artifacts: 'playwright-report/**/*', fingerprint: true
+            node {
+                publishHTML([
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'playwright-report',
+                    reportFiles: 'index.html',
+                    reportName: 'Playwright Report'
+                ])
+                
+                archiveArtifacts artifacts: 'playwright-report/**/*', fingerprint: true
+            }
         }
         failure {
-            archiveArtifacts artifacts: 'test-results/**/*', fingerprint: true
+            node {
+                archiveArtifacts artifacts: 'test-results/**/*', fingerprint: true
+            }
         }
     }
 }
