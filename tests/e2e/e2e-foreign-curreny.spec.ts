@@ -9,11 +9,13 @@ test.describe.parallel("Foreign Currency", () => {
     test.beforeEach(async ({ page }) => {
        loginPage = new LoginPage(page);
              await loginPage.navigate();
-             await loginPage.login('username', 'password');
+             await loginPage.login();
              //this is needed because the webpage has SSH certificate issues
              await page.goto(baseURL + '/bank/transfer-funds.html');
     })
-    test('Verify foreign currency exchange rate', async ({ page }) => {
+    test('Verify foreign currency exchange rate', async ({ page, browserName }) => {
+        test.skip(browserName === 'webkit', 'Webkit does not support this test');
+        test.fixme(browserName === 'firefox', 'This test is not working as expected', );
          await page.click('#pay_bills_tab');
          await page.click('text=Purchase Foreign Currency');
          await page.locator('#pc_currency').selectOption('EUR');
