@@ -11,12 +11,6 @@ pipeline {
     }
  
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Setup') {
             steps {
                 // Clean workspace
@@ -36,24 +30,20 @@ pipeline {
         }
 
         stage('Run Tests') {
-            steps {
-                node {
-                    parallel {
-                        stage('API Tests') {
-                            steps {
-                                bat 'npx playwright test tests/api --config=api.config.ts'
-                            }
-                        }
-                        stage('Visual Tests') {
-                            steps {
-                                bat 'npx playwright test tests/visual --config=visual.config.ts'
-                            }
-                        }
-                        stage('E2E Tests') {
-                            steps {
-                                bat 'npx playwright test tests/e2e --config=playwright.config.ts'
-                            }
-                        }
+            parallel {
+                stage('API Tests') {
+                    steps {
+                        bat 'npx playwright test tests/api --config=api.config.ts'
+                    }
+                }
+                stage('Visual Tests') {
+                    steps {
+                        bat 'npx playwright test tests/visual --config=visual.config.ts'
+                    }
+                }
+                stage('E2E Tests') {
+                    steps {
+                        bat 'npx playwright test tests/e2e --config=playwright.config.ts'
                     }
                 }
             }
@@ -62,23 +52,19 @@ pipeline {
 
     post {
         always {
-            node {
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'playwright-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Playwright Report'
-                ])
-                
-                archiveArtifacts artifacts: 'playwright-report/**/*', fingerprint: true
-            }
+            publishHTML([
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'playwright-report',
+                reportFiles: 'index.html',
+                reportName: 'Playwright Report'
+            ])
+            
+            archiveArtifacts artifacts: 'playwright-report/**/*', fingerprint: true
         }
         failure {
-            node {
-                archiveArtifacts artifacts: 'test-results/**/*', fingerprint: true
-            }
+            archiveArtifacts artifacts: 'test-results/**/*', fingerprint: true
         }
     }
 }
