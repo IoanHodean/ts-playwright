@@ -1,9 +1,9 @@
 import {Locator, expect, Page} from '@playwright/test';
-import {baseURL} from '../playwright.config';
 import {AbstractPage} from './AbstractPage';
 import { snapshot } from 'node:test';
 import * as dotenv from 'dotenv';
 dotenv.config();
+const baseURL = process.env.BASE_URL || 'http://zero.webappsecurity.com';
 
 export class LoginPage extends AbstractPage {
     

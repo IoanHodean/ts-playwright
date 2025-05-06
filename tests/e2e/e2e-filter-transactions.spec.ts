@@ -1,6 +1,7 @@
 import {test, expect} from '@playwright/test';
-import { baseURL } from '../../playwright.config';
 import {LoginPage} from '../../page-objects/LoginPage';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 let loginPage: LoginPage;
 
@@ -11,7 +12,7 @@ test.describe.parallel("Filter Transactions", () => {
       await loginPage.navigate();
       await loginPage.login();
       //this is needed because the webpage has SSH certificate issues
-      await page.goto(baseURL + '/bank/transfer-funds.html');
+      await page.goto(process.env.BASE_URL + '/bank/transfer-funds.html');
     })
     test('Verify results for each account', async ({ page }) => {
          await page.click('#account_activity_tab')

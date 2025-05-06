@@ -1,6 +1,7 @@
 import { test,expect } from "@playwright/test";
-import { baseURL } from '../../playwright.config';
 import { LoginPage } from "../../page-objects/LoginPage";
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 test.describe.parallel.only("Login-logout flow", () => {  
     let loginPage: LoginPage;
@@ -14,7 +15,7 @@ test.describe.parallel.only("Login-logout flow", () => {
     // Test case 1: Login with valid credentials
     test('Login with valid credentials', async ({ page }) => {
        await loginPage.login();    
-        await page.goto(baseURL + '/bank/transfer-funds.html');
+        await page.goto(process.env.BASE_URL + '/bank/transfer-funds.html');
         await expect(page.url()).toContain('/bank/transfer-funds.html');      
     })
 

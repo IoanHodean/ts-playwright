@@ -1,8 +1,9 @@
 import {test, expect} from '@playwright/test';
-import { baseURL } from '../../playwright.config';
 import {LoginPage} from '../../page-objects/LoginPage';
 import { PaymentPage} from '../../page-objects/PaymentPage';
 import {Navbar} from '../../page-objects/components/Navbar';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 let loginPage: LoginPage;
 let paymentPage: PaymentPage;
@@ -16,9 +17,9 @@ test.describe.only("New Payment", () => {
         loginPage = new LoginPage(page);
         navbar = new Navbar(page);
         await loginPage.navigate();
-        await loginPage.login('username', 'password');
+        await loginPage.login();
         //this is needed because the webpage has SSH certificate issues 
-        await page.goto(baseURL + '/bank/transfer-funds.html');
+        await page.goto(`${process.env.BASE_URL}/bank/transfer-funds.html`);
         
     })
     

@@ -1,4 +1,6 @@
 import { PlaywrightTestConfig } from "@playwright/test";
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 const config: PlaywrightTestConfig = {
     testDir: "./tests",
@@ -11,7 +13,7 @@ const config: PlaywrightTestConfig = {
     reporter: "html",
     use: {
         actionTimeout: 10000,
-        baseURL: "http://zero.webappsecurity.com",
+        baseURL: process.env.BASE_URL || "http://zero.webappsecurity.com",
         trace:"retain-on-failure",
         video: "retain-on-failure",
         screenshot: "only-on-failure",
@@ -39,6 +41,5 @@ const config: PlaywrightTestConfig = {
             use: { browserName: "chromium" },
         },
     ],
-    };
-    export default config;
-       export const baseURL = (config.use?.baseURL ?? "http://default.url") as string;
+};
+export default config;

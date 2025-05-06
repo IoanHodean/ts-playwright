@@ -1,6 +1,7 @@
 import {Page, expect, Locator} from '@playwright/test';
-import {baseURL} from '../playwright.config'
 import { AbstractPage } from './AbstractPage';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export class TransferPage extends AbstractPage{
     
