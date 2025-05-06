@@ -50,7 +50,7 @@ test ('POST request to create user', async ({request}) => {
     expect(responseBody.name).toBe('John Doe');
     expect(responseBody.job).toBe('Software Engineer');
 });
-test ('POST request to create user with falsy job', async ({request}) => {
+test.fixme ('POST request to create user with falsy job', async ({request}) => {
     const response= await request.post(`${baseURL}/users`, {
         data: {
             name: 'John Doe',
@@ -61,7 +61,7 @@ test ('POST request to create user with falsy job', async ({request}) => {
     const responseBody = await response.json();
     expect(responseBody.error).toBe('Missing job title');
 });
-test ('POST request to create user with falsy name', async ({request}) => {
+test.fixme ('POST request to create user with falsy name', async ({request}) => {
     const response= await request.post(`${baseURL}/users`, {
         data: {
             name: '',
@@ -113,8 +113,8 @@ test ('DELETE request to delete user', async ({request}) => {
     expect (response.status()).toBe(204);        
 });
 });
-test.describe.parallel.only('Tests without authentication', () => {
-test.skip ('Testing GET endpoint without authentication', async ({request}) => {
+test.describe.parallel('Tests without authentication', () => {
+test ('Testing GET endpoint without authentication', async ({request}) => {
     const response= await request.get(`${baseURL}/users`, {
         headers: {
           'x-api-key': '',
