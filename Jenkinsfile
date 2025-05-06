@@ -26,6 +26,7 @@ pipeline {
     environment {
         TEST_USER = credentials('test-user')
         TEST_PASSWORD = credentials('test-password')
+        BASE_URL = credentials('base-url')
     }
  
     stages {
