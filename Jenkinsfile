@@ -24,6 +24,9 @@ pipeline {
         }
 
         stage('Generate Auth Token') {
+            when {
+                expression { false }  // This makes the stage always skip
+            }
             steps {
                 bat 'npx playwright test tests/setup/auth.setup.ts'
             }
