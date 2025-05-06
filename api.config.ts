@@ -1,5 +1,7 @@
 import { PlaywrightTestConfig } from "@playwright/test";
- 
+import * as dotenv from "dotenv";
+dotenv.config();
+
 const config: PlaywrightTestConfig = {
     testDir: "tests/api",
     retries: 0,
@@ -19,7 +21,7 @@ const config: PlaywrightTestConfig = {
         viewport: { width: 1280, height: 720 },
         ignoreHTTPSErrors: true,
         extraHTTPHeaders: {
-            'x-api-key': 'reqres-free-v1',
+            'x-api-key': (process.env.API_KEY) as string,
             'Accept': 'application/json'
         },
         launchOptions: {

@@ -27,6 +27,7 @@ pipeline {
         TEST_USER = credentials('test-user')
         TEST_PASSWORD = credentials('test-password')
         BASE_URL = credentials('base-url')
+        API_KEY = credentials('api-key')
     }
  
     stages {
@@ -42,7 +43,7 @@ pipeline {
             }
         }      
 
-        stage('Run Tests') {
+        stage('Run Tests') { 
             parallel {
                 stage('API Tests') {
                     when { expression { params.RUN_API == true } }
