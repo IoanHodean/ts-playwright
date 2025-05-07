@@ -9,7 +9,7 @@ test.describe.only('Login Page Visual Testing', () => {
         await loginPage.navigate();
     });
 
-    test('Login Form Snapshot', async () => {
+    test('Login Form Snapshot',{tag: ['@smoke', '@regression']}, async () => {
         await loginPage.snapshotLoginForm();
     });
 

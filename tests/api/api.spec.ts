@@ -4,14 +4,14 @@ import { baseURL } from '../../api.config';
 
 test.describe.parallel('API Tests', () => {      
 
-test('GET request for list', async ({request}) => {
+test('GET request for list', {tag: ['@smoke', '@regression']}, async ({request}) => {
     const response= await request.get(`${baseURL}/users?page=2`);
     expect (response.status()).toBe(200);
     const responseBody = await response.json();
     
 
 });
-test ('Get request with invalid endpoint', async ({request}) => {
+test ('Get request with invalid endpoint',{tag: ['@smoke', '@regression']}, async ({request}) => {
     const response= await request.get(`${baseURL}/users/nonexistent`);
     expect (response.status()).toBe(404);
 });
@@ -38,7 +38,7 @@ test ('validate all users in list', async ({request}) => {
     }
 
 });
-test ('POST request to create user', async ({request}) => {
+test ('POST request to create user', {tag: ['@smoke', '@regression']}, async ({request}) => {
     const response= await request.post(`${baseURL}/users`, {
         data: {
             name: 'John Doe',
