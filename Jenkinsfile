@@ -5,14 +5,6 @@ pipeline {
         nodejs 'NodeJS18'  // Match the exact name from Jenkins configuration
     }
 
-    // Helper function for test tags
-    def getTestTags() {
-        def tags = []
-        if (params.RUN_SMOKE) tags.add('@smoke')
-        if (params.RUN_REGRESSION) tags.add('@regression')
-        return tags.join('|')
-    }
-
     parameters {
         booleanParam(
             name: 'RUN_SMOKE',
@@ -51,6 +43,17 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
+                script {
+                    // Define the function as a closure
+                    def getTestTags = {
+                        def tags = []
+                        if (params.RUN_SMOKE) tags.add('@smoke')
+                        if (params.RUN_REGRESSION) tags.add('@regression')
+                        return tags.join('|')
+                    }
+                    // Store it for use in other stages
+                    env.GREP_PATTERN = getTestTags()
+                }
                 // Clean workspace
                 bat 'if exist node_modules (rmdir /s /q node_modules)'
                 
@@ -66,28 +69,19 @@ pipeline {
                 stage('API Tests') {
                     when { expression { params.RUN_API == true } }
                     steps {
-                        script {
-                            def grepPattern = getTestTags()
-                            bat "npx playwright test tests/api --config=api.config.ts --grep \"${grepPattern}\""
-                        }
+                        bat "npx playwright test tests/api --config=api.config.ts --grep \"${env.GREP_PATTERN}\""
                     }
                 }
                 stage('Visual Tests') {
                     when { expression { params.RUN_VISUAL == true } }
                     steps {
-                        script {
-                            def grepPattern = getTestTags()
-                            bat "npx playwright test tests/visual --config=visual.config.ts --grep \"${grepPattern}\""
-                        }
+                        bat "npx playwright test tests/visual --config=visual.config.ts --grep \"${env.GREP_PATTERN}\""
                     }
                 }
                 stage('E2E Tests') {
                     when { expression { params.RUN_E2E == true } }
                     steps {
-                        script {
-                            def grepPattern = getTestTags()
-                            bat "npx playwright test tests/e2e --config=playwright.config.ts --grep \"${grepPattern}\""
-                        }
+                        bat "npx playwright test tests/e2e --config=playwright.config.ts --grep \"${env.GREP_PATTERN}\""
                     }
                 }
             }

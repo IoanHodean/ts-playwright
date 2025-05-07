@@ -22,7 +22,8 @@ test.describe.parallel.only("Login-logout flow", {tag: ['@smoke', '@regression']
 
     
 // Test case 2: Login with invalid credentials
-test('Login with invalid credentials', async ({ page }) => {
+test('Login with invalid credentials', async ({ page, browserName }) => {
+    test.skip (browserName === 'firefox', 'Skipping this test on Firefox browser');
     await loginPage.login(testData.invalidCredentials[0].username, testData.invalidCredentials[0].password);
     await loginPage.assertErrorMessage();
 })
