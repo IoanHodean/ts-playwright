@@ -6,64 +6,17 @@ pipeline {
     }
 
     parameters {
-        booleanParam(
-            name: 'RUN_SMOKE',
-            defaultValue: true,
-            description: 'Run smoke tests'
-        )
-        booleanParam(
-            name: 'RUN_REGRESSION',
-            defaultValue: false,
-            description: 'Run regression tests'
-        )
-        booleanParam(
-            name: 'RUN_API',
-            defaultValue: true,
-            description: 'Include API tests'
-            description: 'Include API tests'
-        )
-        booleanParam(
-            name: 'RUN_VISUAL',
-            defaultValue: true,
-            description: 'Include visual regression tests'
-            description: 'Include visual regression tests'
-        )
-        booleanParam(
-            name: 'RUN_E2E',
-            defaultValue: true,
-            description: 'Include E2E tests'
-        )
-        booleanParam(
-            name: 'RUN_CHROME',
-            defaultValue: true,
-            description: 'Run tests in Chrome'
-        )
-        booleanParam(
-            name: 'RUN_FIREFOX',
-            defaultValue: false,
-            description: 'Run tests in Firefox'
-        )
-        booleanParam(
-            name: 'RUN_WEBKIT',
-            defaultValue: false,
-            description: 'Run tests in WebKit'
-            description: 'Include E2E tests'
-        )
-        booleanParam(
-            name: 'RUN_CHROME',
-            defaultValue: true,
-            description: 'Run tests in Chrome'
-        )
-        booleanParam(
-            name: 'RUN_FIREFOX',
-            defaultValue: false,
-            description: 'Run tests in Firefox'
-        )
-        booleanParam(
-            name: 'RUN_WEBKIT',
-            defaultValue: false,
-            description: 'Run tests in WebKit'
-        )
+        // Test type parameters
+        booleanParam(name: 'RUN_SMOKE', defaultValue: true, description: 'Run smoke tests')
+        booleanParam(name: 'RUN_REGRESSION', defaultValue: false, description: 'Run regression tests')
+        booleanParam(name: 'RUN_API', defaultValue: true, description: 'Include API tests')
+        booleanParam(name: 'RUN_VISUAL', defaultValue: true, description: 'Include visual regression tests')
+        booleanParam(name: 'RUN_E2E', defaultValue: true, description: 'Include E2E tests')
+        
+        // Browser parameters (single instance)
+        booleanParam(name: 'RUN_CHROME', defaultValue: true, description: 'Run tests in Chrome')
+        booleanParam(name: 'RUN_FIREFOX', defaultValue: false, description: 'Run tests in Firefox')
+        booleanParam(name: 'RUN_WEBKIT', defaultValue: false, description: 'Run tests in WebKit')
     }
 
     environment {
@@ -77,7 +30,6 @@ pipeline {
         stage('Setup') {
             steps {
                 script {
-                    // Test tags helper
                     // Test tags helper
                     def getTestTags = {
                         def tags = []
@@ -98,9 +50,7 @@ pipeline {
                     // Store for use in other stages
                     env.GREP_PATTERN = getTestTags()
                     env.BROWSERS = getSelectedBrowsers().join(',')
-                    env.BROWSERS = getSelectedBrowsers().join(',')
                 }
-                
                 
                 // Clean workspace
                 bat 'if exist node_modules (rmdir /s /q node_modules)'
@@ -111,6 +61,22 @@ pipeline {
                 bat 'npx playwright install-deps'
             }
         }      
+
+        stage('Validate Environment') {
+            steps {
+                script {
+                    if (!env.BROWSERS) {
+                        error 'No browsers selected for testing'
+                    }
+                    if (!env.GREP_PATTERN) {
+                        echo 'No test patterns selected, will run all tests'
+                    }
+                    // Log selected configuration
+                    echo "Selected Browsers: ${env.BROWSERS}"
+                    echo "Test Pattern: ${env.GREP_PATTERN}"
+                }
+            }
+        }
 
         stage('Run Tests') { 
             parallel {
@@ -124,14 +90,10 @@ pipeline {
                         }
                     }
                 }
+                // Single script block per test type
                 stage('Visual Tests') {
                     when { expression { params.RUN_VISUAL == true } }
                     steps {
-                        script {
-                            env.BROWSERS.split(',').each { browser ->
-                                bat "npx playwright test tests/visual --config=visual.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
-                            }
-                        }
                         script {
                             env.BROWSERS.split(',').each { browser ->
                                 bat "npx playwright test tests/visual --config=visual.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
@@ -142,11 +104,6 @@ pipeline {
                 stage('E2E Tests') {
                     when { expression { params.RUN_E2E == true } }
                     steps {
-                        script {
-                            env.BROWSERS.split(',').each { browser ->
-                                bat "npx playwright test tests/e2e --config=playwright.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
-                            }
-                        }
                         script {
                             env.BROWSERS.split(',').each { browser ->
                                 bat "npx playwright test tests/e2e --config=playwright.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
