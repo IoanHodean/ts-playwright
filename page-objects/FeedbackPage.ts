@@ -1,6 +1,8 @@
 import {Page, expect, Locator} from '@playwright/test';
-import {baseURL} from '../playwright.config'
 import {AbstractPage} from './AbstractPage';
+import * as dotenv from 'dotenv';
+dotenv.config();
+const baseURL = process.env.BASE_URL;
 
 export class FeedbackPage extends AbstractPage {
   

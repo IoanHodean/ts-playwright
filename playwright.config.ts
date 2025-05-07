@@ -22,6 +22,9 @@ const config: PlaywrightTestConfig = {
         ignoreHTTPSErrors: true,
         launchOptions: {
         slowMo: 50,
+        env: {
+            TZ: 'Europe/London'
+        },
         },
         extraHTTPHeaders: {
             'Authorization': `Basic ${process.env.TEST_USER}:${process.env.TEST_PASSWORD}`
