@@ -1,6 +1,7 @@
 import {test, expect} from '@playwright/test';
-import { baseURL } from '../../playwright.config';
+import * as dotenv from 'dotenv';
 import { FeedbackPage } from '../../page-objects/FeedbackPage';
+dotenv.config();
 
 let feedbackPage: FeedbackPage;
 

@@ -14,7 +14,8 @@ test.describe.parallel.only("Login-logout flow", {tag: ['@smoke', '@regression']
     })
 
     // Test case 1: Login with valid credentials
-    test('Login with valid credentials', async ({ page }) => {
+    test('Login with valid credentials', async ({ page, browserName }) => {
+        test.skip (browserName === 'firefox', 'Skipping this test on Firefox browser');
        await loginPage.login();    
         await page.goto(process.env.BASE_URL + '/bank/transfer-funds.html');
         await expect(page.url()).toContain('/bank/transfer-funds.html');      

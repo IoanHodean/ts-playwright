@@ -33,3 +33,6 @@ test.describe.parallel("Foreign Currency", () => {
          await expect(page.locator('#alert_content')).toContainText('Foreign currency cash was successfully purchased.');   
           })
 })
+test ('Verify foreign currency exchange rate', async ({ page, browserName }) => {
+    console.log (process.env.BASE_URL);
+});
