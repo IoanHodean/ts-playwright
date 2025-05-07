@@ -1,0 +1,30 @@
+{    
+    "invalidCredentials": [
+        {
+            "username": "wronguser",
+            "password": "wrongpass",
+            "errorMessage": "Invalid username or password"
+        }
+    ]
+    ,
+    "sqlInjection": [
+        {
+            "username": "admin' OR '1'='1",
+            "password": "' OR '1'='1",
+            "errorMessage": "Invalid input detected"
+        }
+    ],
+    "xssAttack": [
+        {
+            "username": "<img src=x onerror=alert(1)>",
+            "password": "test123",
+            "errorMessage": "Invalid input detected"
+        },
+        {
+            "username": "<script>alert('XSS')</script>",
+            "password": "test123",
+            "errorMessage": "Invalid input detected"
+        }
+    ]  
+            
+}

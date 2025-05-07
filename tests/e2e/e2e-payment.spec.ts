@@ -10,7 +10,7 @@ let paymentPage: PaymentPage;
 let navbar: Navbar;
 
 
-test.describe.only("New Payment", () => {
+test.describe.only("New Payment", {tag: [`@smoke`, `@regression`]}, () => {
     //Before hook
     test.beforeEach(async ({ page }) => {
         paymentPage = new PaymentPage(page);
