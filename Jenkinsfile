@@ -19,17 +19,32 @@ pipeline {
         booleanParam(
             name: 'RUN_API',
             defaultValue: true,
-            description: 'Run API tests'
+            description: 'Include API tests'
         )
         booleanParam(
             name: 'RUN_VISUAL',
             defaultValue: true,
-            description: 'Run visual regression tests'
+            description: 'Include visual regression tests'
         )
         booleanParam(
             name: 'RUN_E2E',
             defaultValue: true,
-            description: 'Run E2E tests'
+            description: 'Include E2E tests'
+        )
+        booleanParam(
+            name: 'RUN_CHROME',
+            defaultValue: true,
+            description: 'Run tests in Chrome'
+        )
+        booleanParam(
+            name: 'RUN_FIREFOX',
+            defaultValue: false,
+            description: 'Run tests in Firefox'
+        )
+        booleanParam(
+            name: 'RUN_WEBKIT',
+            defaultValue: false,
+            description: 'Run tests in WebKit'
         )
     }
 
@@ -44,16 +59,28 @@ pipeline {
         stage('Setup') {
             steps {
                 script {
-                    // Define the function as a closure
+                    // Test tags helper
                     def getTestTags = {
                         def tags = []
                         if (params.RUN_SMOKE) tags.add('@smoke')
                         if (params.RUN_REGRESSION) tags.add('@regression')
                         return tags.join('|')
                     }
-                    // Store it for use in other stages
+
+                    // Browser selection helper
+                    def getSelectedBrowsers = {
+                        def browsers = []
+                        if (params.RUN_CHROME) browsers.add('chromium')
+                        if (params.RUN_FIREFOX) browsers.add('firefox')
+                        if (params.RUN_WEBKIT) browsers.add('webkit')
+                        return browsers
+                    }
+
+                    // Store for use in other stages
                     env.GREP_PATTERN = getTestTags()
+                    env.BROWSERS = getSelectedBrowsers().join(',')
                 }
+                
                 // Clean workspace
                 bat 'if exist node_modules (rmdir /s /q node_modules)'
                 
@@ -69,19 +96,31 @@ pipeline {
                 stage('API Tests') {
                     when { expression { params.RUN_API == true } }
                     steps {
-                        bat "npx playwright test tests/api --config=api.config.ts --grep \"${env.GREP_PATTERN}\""
+                        script {
+                            env.BROWSERS.split(',').each { browser ->
+                                bat "npx playwright test tests/api --config=api.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
+                            }
+                        }
                     }
                 }
                 stage('Visual Tests') {
                     when { expression { params.RUN_VISUAL == true } }
                     steps {
-                        bat "npx playwright test tests/visual --config=visual.config.ts --grep \"${env.GREP_PATTERN}\""
+                        script {
+                            env.BROWSERS.split(',').each { browser ->
+                                bat "npx playwright test tests/visual --config=visual.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
+                            }
+                        }
                     }
                 }
                 stage('E2E Tests') {
                     when { expression { params.RUN_E2E == true } }
                     steps {
-                        bat "npx playwright test tests/e2e --config=playwright.config.ts --grep \"${env.GREP_PATTERN}\""
+                        script {
+                            env.BROWSERS.split(',').each { browser ->
+                                bat "npx playwright test tests/e2e --config=playwright.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
+                            }
+                        }
                     }
                 }
             }
