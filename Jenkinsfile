@@ -20,15 +20,33 @@ pipeline {
             name: 'RUN_API',
             defaultValue: true,
             description: 'Include API tests'
+            description: 'Include API tests'
         )
         booleanParam(
             name: 'RUN_VISUAL',
             defaultValue: true,
             description: 'Include visual regression tests'
+            description: 'Include visual regression tests'
         )
         booleanParam(
             name: 'RUN_E2E',
             defaultValue: true,
+            description: 'Include E2E tests'
+        )
+        booleanParam(
+            name: 'RUN_CHROME',
+            defaultValue: true,
+            description: 'Run tests in Chrome'
+        )
+        booleanParam(
+            name: 'RUN_FIREFOX',
+            defaultValue: false,
+            description: 'Run tests in Firefox'
+        )
+        booleanParam(
+            name: 'RUN_WEBKIT',
+            defaultValue: false,
+            description: 'Run tests in WebKit'
             description: 'Include E2E tests'
         )
         booleanParam(
@@ -60,6 +78,7 @@ pipeline {
             steps {
                 script {
                     // Test tags helper
+                    // Test tags helper
                     def getTestTags = {
                         def tags = []
                         if (params.RUN_SMOKE) tags.add('@smoke')
@@ -79,7 +98,9 @@ pipeline {
                     // Store for use in other stages
                     env.GREP_PATTERN = getTestTags()
                     env.BROWSERS = getSelectedBrowsers().join(',')
+                    env.BROWSERS = getSelectedBrowsers().join(',')
                 }
+                
                 
                 // Clean workspace
                 bat 'if exist node_modules (rmdir /s /q node_modules)'
@@ -111,11 +132,21 @@ pipeline {
                                 bat "npx playwright test tests/visual --config=visual.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
                             }
                         }
+                        script {
+                            env.BROWSERS.split(',').each { browser ->
+                                bat "npx playwright test tests/visual --config=visual.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
+                            }
+                        }
                     }
                 }
                 stage('E2E Tests') {
                     when { expression { params.RUN_E2E == true } }
                     steps {
+                        script {
+                            env.BROWSERS.split(',').each { browser ->
+                                bat "npx playwright test tests/e2e --config=playwright.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
+                            }
+                        }
                         script {
                             env.BROWSERS.split(',').each { browser ->
                                 bat "npx playwright test tests/e2e --config=playwright.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
