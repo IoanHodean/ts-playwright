@@ -1,6 +1,5 @@
 import { Page, expect } from '@playwright/test';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import { config } from '../config/environment';
 
 export class AbstractPage {
     readonly page: Page;
@@ -8,7 +7,7 @@ export class AbstractPage {
 
     constructor(page: Page) {
         this.page = page;
-        this.url = process.env.BASE_URL || 'http://zero.webappsecurity.com';
+        this.url = config.baseURL;
     }
 
     

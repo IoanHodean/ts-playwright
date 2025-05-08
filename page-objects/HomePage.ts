@@ -1,8 +1,6 @@
 import {Page, expect, Locator} from '@playwright/test';
 import {AbstractPage} from './AbstractPage';
-import * as dotenv from 'dotenv';
-dotenv.config();
-const baseURL = process.env.BASE_URL;
+import { config } from '../config/environment';
 
 export class HomePage extends AbstractPage {
     
@@ -26,7 +24,7 @@ export class HomePage extends AbstractPage {
     }
 
     async goto() {
-        await this.page.goto(baseURL + '/bank/transfer-funds.html');  
+        await this.page.goto(this.url + '/bank/transfer-funds.html');  
     }
     async clickSignInButton() {
         await this.signInButton.click();

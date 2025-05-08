@@ -2,6 +2,8 @@ import { PlaywrightTestConfig } from "@playwright/test";
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+export const baseURL = process.env.BASE_URL || "http://zero.webappsecurity.com";
+
 const config: PlaywrightTestConfig = {
     testDir: "./tests",
     retries: 0,
@@ -13,7 +15,7 @@ const config: PlaywrightTestConfig = {
     reporter: "html",
     use: {
         actionTimeout: 10000,
-        baseURL: process.env.BASE_URL || "http://zero.webappsecurity.com",
+        baseURL: baseURL,
         trace:"retain-on-failure",
         video: "retain-on-failure",
         screenshot: "only-on-failure",

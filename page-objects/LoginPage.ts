@@ -23,7 +23,7 @@ export class LoginPage extends AbstractPage {
     }
 
     async navigate() {
-        await this.page.goto(`${baseURL}/login.html`);
+        await this.page.goto(`${this.url}/login.html`);
     }
 
     async login(username?: string, password?: string) {

@@ -1,8 +1,5 @@
 import {Page, expect, Locator} from '@playwright/test';
 import {AbstractPage} from './AbstractPage';
-import * as dotenv from 'dotenv';
-dotenv.config();
-const baseURL = process.env.BASE_URL;
 
 export class FeedbackPage extends AbstractPage {
   
@@ -25,7 +22,7 @@ export class FeedbackPage extends AbstractPage {
         this.feedbackTitle = page.locator('h2');
     }
     async goto() {
-        await this.page.goto(baseURL + '/index.html');
+        await this.page.goto(this.url + '/index.html');
         await this.page.click('#feedback');
     }
     async fillForm(name: string, email: string, subject: string, comment: string) {
