@@ -125,20 +125,25 @@ pipeline {
     post {
         always {
             script {
-                // Generate Allure Report
-                bat 'npx allure generate allure-results --clean'
+                // Clean old reports
+                bat 'if exist allure-report (rmdir /s /q allure-report)'
                 
-                // Publish Allure report
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'allure-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Allure Report'
+                // Generate Allure Report with history
+                bat '''
+                    npx allure generate allure-results --clean
+                    xcopy /E /I /Y allure-report\\history allure-results\\history
+                '''
+                
+                // Use allure-jenkins-plugin instead of generic HTML publisher
+                allure([
+                    includeProperties: false,
+                    jdk: '',
+                    properties: [],
+                    reportBuildPolicy: 'ALWAYS',
+                    results: [[path: 'allure-results']]
                 ])
                 
-                // Archive reports
+                // Archive for history
                 archiveArtifacts artifacts: '''
                     allure-results/**/*,
                     allure-report/**/*
