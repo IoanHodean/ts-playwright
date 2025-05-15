@@ -59,6 +59,13 @@ pipeline {
                 bat 'npm ci'
                 bat 'npx playwright install'
                 bat 'npx playwright install-deps'
+                
+                // Install Allure CLI
+                bat 'npm install -g allure-commandline'
+                
+                // Clean previous results
+                bat 'if exist allure-results (rmdir /s /q allure-results)'
+                bat 'if exist allure-report (rmdir /s /q allure-report)'
             }
         }      
 
@@ -117,17 +124,28 @@ pipeline {
 
     post {
         always {
-            publishHTML([
-                allowMissing: false,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'playwright-report',
-                reportFiles: 'index.html',
-                reportName: 'Playwright Report'
-            ])
-            
-            archiveArtifacts artifacts: 'playwright-report/**/*', fingerprint: true
+            script {
+                // Generate Allure Report
+                bat 'npx allure generate allure-results --clean'
+                
+                // Publish Allure report
+                publishHTML([
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'allure-report',
+                    reportFiles: 'index.html',
+                    reportName: 'Allure Report'
+                ])
+                
+                // Archive reports
+                archiveArtifacts artifacts: '''
+                    allure-results/**/*,
+                    allure-report/**/*
+                ''', fingerprint: true
+            }
         }
+        
         failure {
             archiveArtifacts artifacts: 'test-results/**/*', fingerprint: true
         }
