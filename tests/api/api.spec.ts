@@ -1,6 +1,18 @@
 import {test, expect, request} from '@playwright/test';
 import { baseURL } from '../../api.config';
+import { faker }  from '@faker-js/faker';
+import { User } from '../../utils/User';
 
+
+// Headers override for unauthorized requests
+const unauthorizedHeader = {
+    headers: {
+        'x-api-key': ''
+    }
+};
+
+// Test data declarations
+ const user= new User ();
 
 test.describe.parallel('API Tests', () => {      
 
@@ -39,21 +51,22 @@ test ('validate all users in list', async ({request}) => {
 
 });
 test ('POST request to create user', {tag: ['@smoke', '@regression']}, async ({request}) => {
+   
     const response= await request.post(`${baseURL}/users`, {
         data: {
-            name: 'John Doe',
-            job: 'Software Engineer'
+            name: user.getFullName(),
+            job: user.getJobTitle()
         }
     });
     expect (response.status()).toBe(201);
     const responseBody = await response.json();
-    expect(responseBody.name).toBe('John Doe');
-    expect(responseBody.job).toBe('Software Engineer');
+    expect(responseBody.name).toBe(user.getFullName());
+    expect(responseBody.job).toBe(user.getJobTitle());
 });
 test.fixme ('POST request to create user with falsy job', async ({request}) => {
     const response= await request.post(`${baseURL}/users`, {
         data: {
-            name: 'John Doe',
+            name: user.getFullName(),
             job: ''
         }
     });
@@ -65,7 +78,7 @@ test.fixme ('POST request to create user with falsy name', async ({request}) => 
     const response= await request.post(`${baseURL}/users`, {
         data: {
             name: '',
-            job: 'general manager'
+            job: user.getJobTitle()
         }
     });
     expect (response.status()).toBe(400);
@@ -83,29 +96,30 @@ test('POST request login', async ({request}) => {
     const responseBody = await response.json();
     expect(responseBody.token).toBeTruthy();
 });
-test ('PUT request to update user', async ({request}) => {
-    const response= await request.put(`${baseURL}/users/2`, {
+test ('PUT request to update user', {tag: ['@smoke', '@regression']}, async ({request}) => {
+        const response = await request.put(`${baseURL}/users/2`, {
         data: {
-            name: 'John Doe',
-            job: 'Senior Software Engineer'
+            name: user.getFullName(),
+            job: user.getJobTitle()
         }
     });
-    expect (response.status()).toBe(200);
-    const responseBody = await response.json();
-    expect(responseBody.name).toBe('John Doe');
-    expect(responseBody.job).toBe('Senior Software Engineer');        
+    expect(response.status()).toBe(200);
+    const responseBody = await response.json();    
+    expect(responseBody.name).toBe(user.getFullName());
+    expect(responseBody.job).toBe(user.getJobTitle());
+    expect(responseBody.updatedAt).toBeTruthy();
+    expect(new Date(responseBody.updatedAt)).toBeInstanceOf(Date);
 });
 test ('PATCH request to update user', async ({request}) => {
     const response= await request.patch(`${baseURL}/users/2`, {
         data: {
-            name: 'John Doe',
-            job: 'Senior Software Engineer'
-        }
+            name: user.getFullName(),
+            job: user.getJobTitle()}
     });
     expect (response.status()).toBe(200);
     const responseBody = await response.json();
-    expect(responseBody.name).toBe('John Doe');
-    expect(responseBody.job).toBe('Senior Software Engineer');        
+    expect(responseBody.name).toBe(user.getFullName());
+    expect(responseBody.job).toBe(user.getJobTitle());        
 
 });
 test ('DELETE request to delete user', async ({request}) => {
@@ -114,60 +128,43 @@ test ('DELETE request to delete user', async ({request}) => {
 });
 });
 test.describe.parallel('Tests without authentication', () => {
-test ('Testing GET endpoint without authentication', async ({request}) => {
-    const response= await request.get(`${baseURL}/users`, {
-        headers: {
-          'x-api-key': '',
-        }
-    });
-        expect (response.status()).toBe(401);              
+    test('Testing GET endpoint without authentication', async ({request}) => {
+        const response = await request.get(`${baseURL}/users`, unauthorizedHeader);
+        expect(response.status()).toBe(401);
     });
     test ('Testing POST endpoint without authentication', async ({request}) => {
         const response= await request.post(`${baseURL}/users`, {
-            headers: {
-              'x-api-key': '',
-            },
-            
+            ...unauthorizedHeader,
             data: {
-                name: 'John Doe',
-                job: 'Software Engineer'
+                name: user.getFullName(),
+                job: user.getJobTitle()            
             }
         });   
         expect (response.status()).toBe(401);
     });
     test ('Testing PUT endpoint without authentication', async ({request}) => {
         const response= await request.put(`${baseURL}/users/2`, {
-            headers: {
-              'x-api-key': '',
-            },
-            
+            ...unauthorizedHeader,
             data: {
-                name: 'John Doe',
-                job: 'Senior Software Engineer'
+                name: user.getFullName(),
+                job: user.getJobTitle()            
             }
         });   
         expect (response.status()).toBe(401);
     });
     test ('Testing PATCH endpoint without authentication', async ({request}) => {
         const response= await request.patch(`${baseURL}/users/2`, {
-            headers: {
-              'x-api-key': '',
-            },
-            
+            ...unauthorizedHeader,
             data: {
-                name: 'John Doe',
-                job: 'Senior Software Engineer'
+                name: user.getFullName(),
+                job: user.getJobTitle()            
             }
         });   
         expect (response.status()).toBe(401);
     }
     );
     test ('Testing DELETE endpoint without authentication', async ({request}) => {
-        const response= await request.delete(`${baseURL}/users/2`, {
-            headers: {
-              'x-api-key': '',
-            }
-        });   
+        const response= await request.delete(`${baseURL}/users/2`, unauthorizedHeader);   
         expect (response.status()).toBe(401);
     });  
     });

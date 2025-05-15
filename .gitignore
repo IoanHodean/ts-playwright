@@ -56,3 +56,7 @@ Thumbs.db
 screenshots/
 videos/
 trace.zip
+
+#Allure local reports
+/allure-results/
+/allure-report/

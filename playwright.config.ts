@@ -1,4 +1,4 @@
-import { PlaywrightTestConfig } from "@playwright/test";
+import { PlaywrightTestConfig, defineConfig } from "@playwright/test";
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -12,7 +12,14 @@ const config: PlaywrightTestConfig = {
         timeout: 5000,
     },
     fullyParallel: true,
-    reporter: "html",
+    reporter: [
+        ['line'],
+        ['allure-playwright', {
+            detail: true,
+            outputFolder: 'allure-results',
+            suiteTitle: false
+        }]
+    ],
     use: {
         actionTimeout: 10000,
         baseURL: baseURL,
@@ -47,4 +54,4 @@ const config: PlaywrightTestConfig = {
         },
     ],
 };
-export default config;
+export default defineConfig(config);

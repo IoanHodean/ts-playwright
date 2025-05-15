@@ -10,7 +10,14 @@ const config: PlaywrightTestConfig = {
         timeout: 5000,
     },
     fullyParallel: true,
-    reporter: "html",
+    reporter: [
+        ['line'],
+        ['allure-playwright', {
+            detail: true,
+            outputFolder: 'allure-results',
+            suiteTitle: false
+        }]
+    ],
     use: {
         actionTimeout: 10000,
         baseURL: "https://reqres.in/api",

@@ -16,11 +16,15 @@
     "jenkins-server": "java -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true -jar jenkins.war --httpPort=8080 --enable-future-java",
     "test": "playwright test",
     "test:cucumber": "cross-env NODE_OPTIONS=--loader=ts-node/esm cucumber-js --config cucumber.js",
-    "test:report": "node reporter.js"
+    "test:report": "node reporter.js",
+    "allure:generate": "npx allure generate ./allure-results --clean",
+    "allure:open": "npx allure open ./allure-report",
+    "test:allure": "npm run allure:generate && npm run allure:open"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^9.8.0",
     "dotenv": "^16.5.0",
     "prettier": "^3.5.3"
   },
@@ -29,6 +33,7 @@
     "@playwright/test": "^1.52.0",
     "@types/dotenv": "^6.1.1",
     "@types/node": "^22.15.3",
+    "allure-playwright": "^3.2.2",
     "cross-env": "^7.0.3",
     "cucumber-reporter": "^1.0.0",
     "playwright": "^1.52.0",

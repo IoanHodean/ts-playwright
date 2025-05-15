@@ -8,7 +8,7 @@ const config: PlaywrightTestConfig = {
         timeout: 5000,
     },
     fullyParallel: true,
-    reporter: "html",
+    reporter: "allure-playwright",
     use: {
         actionTimeout: 10000,
         baseURL: "http://zero.webappsecurity.com",
