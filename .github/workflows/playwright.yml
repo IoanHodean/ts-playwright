@@ -2,9 +2,9 @@ name: Playwright Test Suite
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [allure-implementation]
   pull_request:
-    branches: [ main, develop ]
+    branches: [allure-implementation]
   workflow_dispatch:
     inputs:
       smoke:
