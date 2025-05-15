@@ -15,6 +15,22 @@ on:
         description: 'Run regression tests'
         type: boolean
         default: false
+      browser:
+        description: 'Browser to run tests on'
+        type: choice
+        options:
+          - chrome
+          - firefox
+          - webkit
+        default: 'chrome'
+      environment:
+        description: 'Test environment'
+        type: choice
+        options:
+          - qa
+          - staging
+          - prod
+        default: 'qa'
 
 env:
   BASE_URL: ${{ secrets.BASE_URL }}
