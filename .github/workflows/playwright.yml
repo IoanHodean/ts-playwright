@@ -1,0 +1,99 @@
+name: Playwright Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      smoke:
+        description: 'Run smoke tests'
+        type: boolean
+        default: true
+      regression:
+        description: 'Run regression tests'
+        type: boolean
+        default: false
+
+env:
+  BASE_URL: ${{ secrets.BASE_URL }}
+  API_KEY: ${{ secrets.API_KEY }}
+  TEST_USER: ${{ secrets.TEST_USER }}
+  TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+
+jobs:
+  api-tests:
+    if: ${{ inputs.smoke || inputs.regression }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps
+      
+      - name: Run API Tests
+        run: |
+          npx playwright test tests/api --config=api.config.ts
+      
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          npm install -g allure-commandline
+          allure generate allure-results --clean
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-api
+          path: allure-report/
+          retention-days: 30
+
+  ui-tests:
+    if: ${{ inputs.smoke || inputs.regression }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [visual, e2e]
+        browser: [chrome, firefox, webkit]
+      fail-fast: false
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps
+      
+      - name: Run ${{ matrix.test-type }} Tests
+        run: |
+          npx playwright test tests/${{ matrix.test-type }} --project=${{ matrix.browser }}
+      
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          npm install -g allure-commandline
+          allure generate allure-results --clean
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.test-type }}-${{ matrix.browser }}
+          path: |
+            test-results/
+            playwright-report/
+            allure-report/
+          retention-days: 30
