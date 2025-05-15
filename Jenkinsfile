@@ -3,6 +3,7 @@ pipeline {
 
     tools {
         nodejs 'NodeJS18'  // Match the exact name from Jenkins configuration
+        allure 'Allure'  // Add this line to use configured Allure tool
     }
 
     parameters {
@@ -125,29 +126,33 @@ pipeline {
     post {
         always {
             script {
-                // Clean old reports
-                bat 'if exist allure-report (rmdir /s /q allure-report)'
-                
-                // Generate Allure Report with history
-                bat '''
-                    npx allure generate allure-results --clean
-                    xcopy /E /I /Y allure-report\\history allure-results\\history
-                '''
-                
-                // Use allure-jenkins-plugin instead of generic HTML publisher
-                allure([
-                    includeProperties: false,
-                    jdk: '',
-                    properties: [],
-                    reportBuildPolicy: 'ALWAYS',
-                    results: [[path: 'allure-results']]
-                ])
-                
-                // Archive for history
-                archiveArtifacts artifacts: '''
-                    allure-results/**/*,
-                    allure-report/**/*
-                ''', fingerprint: true
+                try {
+                    // Clean old reports
+                    bat 'if exist allure-report (rmdir /s /q allure-report)'
+                    
+                    // Generate Allure Report
+                    bat """
+                        allure generate allure-results --clean -o allure-report
+                        if exist allure-report\\history (
+                            xcopy /E /I /Y allure-report\\history allure-results\\history
+                        )
+                    """
+                    
+                    // Publish report
+                    allure([
+                        includeProperties: false,
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: 'allure-results']]
+                    ])
+                } catch (Exception e) {
+                    echo "Failed to generate Allure report: ${e.message}"
+                } finally {
+                    archiveArtifacts(
+                        artifacts: 'allure-results/**, allure-report/**', 
+                        allowEmptyArchive: true,
+                        fingerprint: true
+                    )
+                }
             }
         }
         
