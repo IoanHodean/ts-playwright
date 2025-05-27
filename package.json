@@ -14,17 +14,27 @@
     "tests:api": "playwright test --config=api.config.ts",
     "tests:smoke": "playwright test --config=playwright.config.ts --grep @smoke",
     "jenkins-server": "java -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true -jar jenkins.war --httpPort=8080 --enable-future-java",
-    "test": "playwright test"
+    "test": "playwright test",
+    "k6": "k6 run",
+    "k6:api": "k6 run k6-tests/api-load-test.js",
+    "k6:smoke": "k6 run --vus 1 --duration 30s k6-tests/api-load-test.js",
+    "k6:stress": "k6 run --vus 30 --duration 2m k6-tests/api-load-test.js",
+    "k6:typical": "k6 run --tag testType=typical_api_flow k6-tests/api-load-test.js",
+    "k6:login-spike": "k6 run --tag testType=login_spike k6-tests/api-load-test.js",
+    "k6:load": "k6 run --vus 10 --duration 5m k6-tests/api-load-test.js",
+    "k6:soak": "k6 run --vus 5 --duration 30m k6-tests/api-load-test.js",
+    "k6:all": "npm run k6:smoke && npm run k6:typical && npm run k6:login-spike"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.5.0",
+    "k6": "^0.0.0",
     "prettier": "^3.5.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",
-    "@types/dotenv": "^6.1.1",
+    "@types/dotenv": "^6.1.1",    
     "@types/node": "^22.15.3",
     "playwright": "^1.52.0",
     "ts-node": "^10.9.2",

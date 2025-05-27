@@ -56,3 +56,10 @@ Thumbs.db
 screenshots/
 videos/
 trace.zip
+
+allure-report/
+allure-results/
+
+# k6 specific
+k6-report/
+*.k6.json
