@@ -1,0 +1,13 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<fingerprint>
+  <timestamp>2025-05-28 09:05:19.280 UTC</timestamp>
+  <md5sum>8814758880cfa0da4afc76f298b27dbd</md5sum>
+  <fileName>Credential id=base-url name=base-url</fileName>
+  <usages>
+    <entry>
+      <string>Playwright-Tests</string>
+      <ranges>14-17</ranges>
+    </entry>
+  </usages>
+  <facets/>
+</fingerprint>

@@ -1,0 +1,949 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-build plugin="workflow-job@1520.v56d65e3b_4566">
+  <actions>
+    <hudson.model.ParametersAction>
+      <safeParameters class="sorted-set"/>
+      <parameters>
+        <hudson.model.BooleanParameterValue>
+          <name>RUN_SMOKE</name>
+          <description>Run smoke tests</description>
+          <value>false</value>
+        </hudson.model.BooleanParameterValue>
+        <hudson.model.BooleanParameterValue>
+          <name>RUN_REGRESSION</name>
+          <description>Run regression tests</description>
+          <value>false</value>
+        </hudson.model.BooleanParameterValue>
+        <hudson.model.BooleanParameterValue>
+          <name>RUN_API</name>
+          <description>Include API tests</description>
+          <value>true</value>
+        </hudson.model.BooleanParameterValue>
+        <hudson.model.BooleanParameterValue>
+          <name>RUN_VISUAL</name>
+          <description>Include visual regression tests</description>
+          <value>false</value>
+        </hudson.model.BooleanParameterValue>
+        <hudson.model.BooleanParameterValue>
+          <name>RUN_E2E</name>
+          <description>Include E2E tests</description>
+          <value>false</value>
+        </hudson.model.BooleanParameterValue>
+        <hudson.model.BooleanParameterValue>
+          <name>RUN_CHROME</name>
+          <description>Run tests in Chrome</description>
+          <value>true</value>
+        </hudson.model.BooleanParameterValue>
+        <hudson.model.BooleanParameterValue>
+          <name>RUN_FIREFOX</name>
+          <description>Run tests in Firefox</description>
+          <value>false</value>
+        </hudson.model.BooleanParameterValue>
+        <hudson.model.BooleanParameterValue>
+          <name>RUN_WEBKIT</name>
+          <description>Run tests in WebKit</description>
+          <value>false</value>
+        </hudson.model.BooleanParameterValue>
+      </parameters>
+      <parameterDefinitionNames>
+        <string>RUN_SMOKE</string>
+        <string>RUN_REGRESSION</string>
+        <string>RUN_API</string>
+        <string>RUN_VISUAL</string>
+        <string>RUN_E2E</string>
+        <string>RUN_CHROME</string>
+        <string>RUN_FIREFOX</string>
+        <string>RUN_WEBKIT</string>
+      </parameterDefinitionNames>
+    </hudson.model.ParametersAction>
+    <hudson.model.CauseAction>
+      <causeBag class="linked-hash-map">
+        <entry>
+          <hudson.model.Cause_-UserIdCause>
+            <userId>admin</userId>
+          </hudson.model.Cause_-UserIdCause>
+          <int>1</int>
+        </entry>
+      </causeBag>
+    </hudson.model.CauseAction>
+    <jenkins.metrics.impl.TimeInQueueAction plugin="metrics@4.2.32-476.v5042e1c1edd7">
+      <queuingDurationMillis>3</queuingDurationMillis>
+      <blockedDurationMillis>0</blockedDurationMillis>
+      <buildableDurationMillis>0</buildableDurationMillis>
+      <waitingDurationMillis>1</waitingDurationMillis>
+    </jenkins.metrics.impl.TimeInQueueAction>
+    <org.jenkinsci.plugins.workflow.libs.LibrariesAction plugin="pipeline-groovy-lib@752.vdddedf804e72">
+      <libraries/>
+    </org.jenkinsci.plugins.workflow.libs.LibrariesAction>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction plugin="pipeline-model-definition@2.2255.v56a_15e805f12">
+      <stagesUUID>c3bb2240-0c5d-437c-8194-7a0b161a4569</stagesUUID>
+      <pipelineDefs>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef plugin="pipeline-model-api@2.2255.v56a_15e805f12">
+          <stages>
+            <stages>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Setup</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">def getTestTags = {
+                        def tags = []
+                        if (params.RUN_SMOKE) tags.add(&apos;@smoke&apos;)
+                        if (params.RUN_REGRESSION) tags.add(&apos;@regression&apos;)
+                        return tags.join(&apos;|&apos;)
+                    }
+
+                    // Browser selection helper
+                    def getSelectedBrowsers = {
+                        def browsers = []
+                        if (params.RUN_CHROME) browsers.add(&apos;Chrome&apos;)
+                        if (params.RUN_FIREFOX) browsers.add(&apos;Firefox&apos;)
+                        if (params.RUN_WEBKIT) browsers.add(&apos;Webkit&apos;)
+                        return browsers
+                    }
+
+                    // Store for use in other stages
+                    env.GREP_PATTERN = getTestTags()
+                    env.BROWSERS = getSelectedBrowsers().join(&apos;,&apos;)</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">sh &quot;&quot;&quot;
+                        docker run --rm \
+                        -v \${WORKSPACE}:/app \
+                        playwright-tests \
+                        npm ci
+                    &quot;&quot;&quot;
+                    
+                    sh &quot;&quot;&quot;
+                        docker run --rm \
+                        -v \${WORKSPACE}:/app \
+                        playwright-tests \
+                        npx playwright install
+                    &quot;&quot;&quot;</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Validate Environment</name>
+                <branches>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                    <name>default</name>
+                    <steps>
+                      <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                        <name>script</name>
+                        <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                          <arguments class="linked-hash-map">
+                            <entry>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                <key>scriptBlock</key>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                <value class="string">if (!env.BROWSERS) {
+                        error &apos;No browsers selected for testing&apos;
+                    }
+                    if (!env.GREP_PATTERN) {
+                        echo &apos;No test patterns selected, will run all tests&apos;
+                    }
+                    // Log selected configuration
+                    echo &quot;Selected Browsers: ${env.BROWSERS}&quot;
+                    echo &quot;Test Pattern: ${env.GREP_PATTERN}&quot;</value>
+                              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                            </entry>
+                          </arguments>
+                        </args>
+                      </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                    </steps>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                </branches>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                <name>Run Tests</name>
+                <branches/>
+                <parallel>
+                  <stages>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                      <when>
+                        <conditions>
+                          <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTWhenExpression>
+                            <name>expression</name>
+                            <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                              <arguments class="linked-hash-map">
+                                <entry>
+                                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                    <key>scriptBlock</key>
+                                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                    <value class="string">params.RUN_API == true</value>
+                                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                </entry>
+                              </arguments>
+                            </args>
+                          </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTWhenExpression>
+                        </conditions>
+                      </when>
+                      <name>API Tests</name>
+                      <branches>
+                        <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                          <name>default</name>
+                          <steps>
+                            <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                              <name>script</name>
+                              <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                                <arguments class="linked-hash-map">
+                                  <entry>
+                                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                      <key>scriptBlock</key>
+                                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                      <value class="string">sh &quot;&quot;&quot;
+                                docker run --rm \
+                                -v \${WORKSPACE}:/app \
+                                playwright-tests \
+                                npx playwright test tests/api --config=api.config.ts --grep &quot;${env.GREP_PATTERN}&quot;
+                            &quot;&quot;&quot;</value>
+                                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                  </entry>
+                                </arguments>
+                              </args>
+                            </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                          </steps>
+                        </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                      </branches>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                      <when>
+                        <conditions>
+                          <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTWhenExpression>
+                            <name>expression</name>
+                            <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                              <arguments class="linked-hash-map">
+                                <entry>
+                                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                    <key>scriptBlock</key>
+                                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                    <value class="string">params.RUN_VISUAL == true</value>
+                                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                </entry>
+                              </arguments>
+                            </args>
+                          </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTWhenExpression>
+                        </conditions>
+                      </when>
+                      <name>Visual Tests</name>
+                      <branches>
+                        <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                          <name>default</name>
+                          <steps>
+                            <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                              <name>script</name>
+                              <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                                <arguments class="linked-hash-map">
+                                  <entry>
+                                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                      <key>scriptBlock</key>
+                                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                      <value class="string">env.BROWSERS.split(&apos;,&apos;).each { browser -&gt;
+                                sh &quot;&quot;&quot;
+                                    docker run --rm \
+                                    -v \${WORKSPACE}:/app \
+                                    playwright-tests \
+                                    npx playwright test tests/visual --config=visual.config.ts --grep &quot;${env.GREP_PATTERN}&quot; --project=${browser}
+                                &quot;&quot;&quot;
+                            }</value>
+                                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                  </entry>
+                                </arguments>
+                              </args>
+                            </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                          </steps>
+                        </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                      </branches>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                      <when>
+                        <conditions>
+                          <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTWhenExpression>
+                            <name>expression</name>
+                            <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                              <arguments class="linked-hash-map">
+                                <entry>
+                                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                    <key>scriptBlock</key>
+                                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                    <value class="string">params.RUN_E2E == true</value>
+                                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                </entry>
+                              </arguments>
+                            </args>
+                          </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTWhenExpression>
+                        </conditions>
+                      </when>
+                      <name>E2E Tests</name>
+                      <branches>
+                        <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                          <name>default</name>
+                          <steps>
+                            <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                              <name>script</name>
+                              <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                                <arguments class="linked-hash-map">
+                                  <entry>
+                                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                      <key>scriptBlock</key>
+                                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                      <value class="string">env.BROWSERS.split(&apos;,&apos;).each { browser -&gt;
+                                sh &quot;&quot;&quot;
+                                    docker run --rm \
+                                    -v \${WORKSPACE}:/app \
+                                    playwright-tests \
+                                    npx playwright test tests/e2e --config=playwright.config.ts --grep &quot;${env.GREP_PATTERN}&quot; --project=${browser}
+                                &quot;&quot;&quot;
+                            }</value>
+                                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                                  </entry>
+                                </arguments>
+                              </args>
+                            </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                          </steps>
+                        </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBranch>
+                      </branches>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+                  </stages>
+                  <uuid>381208f9-b994-4dee-832b-de1318cc3381</uuid>
+                </parallel>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStage>
+            </stages>
+            <uuid>c3bb2240-0c5d-437c-8194-7a0b161a4569</uuid>
+          </stages>
+          <postBuild>
+            <conditions>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildCondition>
+                <condition>always</condition>
+                <branch>
+                  <name>default</name>
+                  <steps>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                      <name>script</name>
+                      <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                        <arguments class="linked-hash-map">
+                          <entry>
+                            <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <key>scriptBlock</key>
+                            </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                            <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                              <value class="string">try {
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: &apos;playwright-report&apos;,
+                        reportFiles: &apos;index.html&apos;,
+                        reportName: &apos;Playwright Report&apos;
+                    ])
+                    
+                    archiveArtifacts artifacts: &apos;playwright-report/**/*&apos;, fingerprint: true
+                } catch (Exception e) {
+                    echo &quot;Publishing failed: ${e.getMessage()}&quot;
+                }</value>
+                            </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                          </entry>
+                        </arguments>
+                      </args>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                  </steps>
+                </branch>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildCondition>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildCondition>
+                <condition>failure</condition>
+                <branch>
+                  <name>default</name>
+                  <steps>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                      <name>script</name>
+                      <args class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTNamedArgumentList">
+                        <arguments class="linked-hash-map">
+                          <entry>
+                            <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                              <key>scriptBlock</key>
+                            </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                            <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                              <value class="string">try {
+                    archiveArtifacts artifacts: &apos;test-results/**/*&apos;, fingerprint: true
+                } catch (Exception e) {
+                    echo &quot;Artifact archiving failed: ${e.getMessage()}&quot;
+                }</value>
+                            </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                          </entry>
+                        </arguments>
+                      </args>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTScriptBlock>
+                  </steps>
+                </branch>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildCondition>
+            </conditions>
+          </postBuild>
+          <environment>
+            <variables class="linked-hash-map">
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>TEST_USER</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+                  <name>credentials</name>
+                  <args>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                      <value class="string">test-user</value>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  </args>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+              </entry>
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>TEST_PASSWORD</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+                  <name>credentials</name>
+                  <args>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                      <value class="string">test-password</value>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  </args>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+              </entry>
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>BASE_URL</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+                  <name>credentials</name>
+                  <args>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                      <value class="string">base-url</value>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  </args>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+              </entry>
+              <entry>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                  <key>API_KEY</key>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKey>
+                <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+                  <name>credentials</name>
+                  <args>
+                    <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                      <value class="string">api-key</value>
+                    </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue_-ConstantValue>
+                  </args>
+                </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTInternalFunctionCall>
+              </entry>
+            </variables>
+          </environment>
+          <agent>
+            <agentType>
+              <key>any</key>
+            </agentType>
+          </agent>
+          <parameters>
+            <parameters>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+                <name>booleanParam</name>
+                <args>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>name</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">RUN_SMOKE</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>defaultValue</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="boolean">true</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>description</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">Run smoke tests</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                </args>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+                <name>booleanParam</name>
+                <args>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>name</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">RUN_REGRESSION</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>defaultValue</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="boolean">false</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>description</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">Run regression tests</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                </args>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+                <name>booleanParam</name>
+                <args>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>name</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">RUN_API</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>defaultValue</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="boolean">true</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>description</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">Include API tests</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                </args>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+                <name>booleanParam</name>
+                <args>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>name</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">RUN_VISUAL</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>defaultValue</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="boolean">true</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>description</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">Include visual regression tests</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                </args>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+                <name>booleanParam</name>
+                <args>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>name</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">RUN_E2E</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>defaultValue</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="boolean">true</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>description</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">Include E2E tests</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                </args>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+                <name>booleanParam</name>
+                <args>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>name</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">RUN_CHROME</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>defaultValue</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="boolean">true</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>description</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">Run tests in Chrome</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                </args>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+                <name>booleanParam</name>
+                <args>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>name</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">RUN_FIREFOX</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>defaultValue</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="boolean">false</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>description</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">Run tests in Firefox</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                </args>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+              <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+                <name>booleanParam</name>
+                <args>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>name</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">RUN_WEBKIT</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>defaultValue</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="boolean">false</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                  <org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                    <key>
+                      <key>description</key>
+                    </key>
+                    <value class="org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTValue$ConstantValue">
+                      <value class="string">Run tests in WebKit</value>
+                    </value>
+                  </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTKeyValueOrMethodCallPair>
+                </args>
+              </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTBuildParameter>
+            </parameters>
+          </parameters>
+        </org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTPipelineDef>
+      </pipelineDefs>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction>
+    <com.cloudbees.plugins.credentials.builds.CredentialsParameterBinder plugin="credentials@1415.v831096eb_5534">
+      <boundCredentials class="concurrent-hash-map"/>
+    </com.cloudbees.plugins.credentials.builds.CredentialsParameterBinder>
+    <jenkins.metrics.impl.SubTaskTimeInQueueAction plugin="metrics@4.2.32-476.v5042e1c1edd7">
+      <queuingDurationMillis>20</queuingDurationMillis>
+      <blockedDurationMillis>0</blockedDurationMillis>
+      <buildableDurationMillis>19</buildableDurationMillis>
+      <waitingDurationMillis>0</waitingDurationMillis>
+      <executingDurationMillis>462</executingDurationMillis>
+      <workUnitCount>1</workUnitCount>
+    </jenkins.metrics.impl.SubTaskTimeInQueueAction>
+  </actions>
+  <queueId>16</queueId>
+  <timestamp>1748422435765</timestamp>
+  <startTime>1748422435795</startTime>
+  <result>FAILURE</result>
+  <duration>4198</duration>
+  <charset>UTF-8</charset>
+  <keepLog>false</keepLog>
+  <execution class="org.jenkinsci.plugins.workflow.cps.CpsFlowExecution">
+    <result>FAILURE</result>
+    <script>pipeline {
+    agent any
+
+    // Remove the tools section since you&apos;re using Docker
+    // tools {
+    //     nodejs &apos;NodeJS18&apos;
+    // }
+
+    parameters {
+        // Test type parameters
+        booleanParam(name: &apos;RUN_SMOKE&apos;, defaultValue: true, description: &apos;Run smoke tests&apos;)
+        booleanParam(name: &apos;RUN_REGRESSION&apos;, defaultValue: false, description: &apos;Run regression tests&apos;)
+        booleanParam(name: &apos;RUN_API&apos;, defaultValue: true, description: &apos;Include API tests&apos;)
+        booleanParam(name: &apos;RUN_VISUAL&apos;, defaultValue: true, description: &apos;Include visual regression tests&apos;)
+        booleanParam(name: &apos;RUN_E2E&apos;, defaultValue: true, description: &apos;Include E2E tests&apos;)
+        
+        // Browser parameters
+        booleanParam(name: &apos;RUN_CHROME&apos;, defaultValue: true, description: &apos;Run tests in Chrome&apos;)
+        booleanParam(name: &apos;RUN_FIREFOX&apos;, defaultValue: false, description: &apos;Run tests in Firefox&apos;)
+        booleanParam(name: &apos;RUN_WEBKIT&apos;, defaultValue: false, description: &apos;Run tests in WebKit&apos;)
+    }
+
+    environment {
+        TEST_USER = credentials(&apos;test-user&apos;)
+        TEST_PASSWORD = credentials(&apos;test-password&apos;)
+        BASE_URL = credentials(&apos;base-url&apos;)
+        API_KEY = credentials(&apos;api-key&apos;)
+    }
+ 
+    stages {
+        stage(&apos;Setup&apos;) {
+            steps {
+                script {
+                    // Test tags helper
+                    def getTestTags = {
+                        def tags = []
+                        if (params.RUN_SMOKE) tags.add(&apos;@smoke&apos;)
+                        if (params.RUN_REGRESSION) tags.add(&apos;@regression&apos;)
+                        return tags.join(&apos;|&apos;)
+                    }
+
+                    // Browser selection helper
+                    def getSelectedBrowsers = {
+                        def browsers = []
+                        if (params.RUN_CHROME) browsers.add(&apos;Chrome&apos;)
+                        if (params.RUN_FIREFOX) browsers.add(&apos;Firefox&apos;)
+                        if (params.RUN_WEBKIT) browsers.add(&apos;Webkit&apos;)
+                        return browsers
+                    }
+
+                    // Store for use in other stages
+                    env.GREP_PATTERN = getTestTags()
+                    env.BROWSERS = getSelectedBrowsers().join(&apos;,&apos;)
+                }
+                
+                // Use Docker instead of local Node.js
+                script {
+                    sh &quot;&quot;&quot;
+                        docker run --rm \
+                        -v \${WORKSPACE}:/app \
+                        playwright-tests \
+                        npm ci
+                    &quot;&quot;&quot;
+                    
+                    sh &quot;&quot;&quot;
+                        docker run --rm \
+                        -v \${WORKSPACE}:/app \
+                        playwright-tests \
+                        npx playwright install
+                    &quot;&quot;&quot;
+                }
+            }
+        }      
+
+        stage(&apos;Validate Environment&apos;) {
+            steps {
+                script {
+                    if (!env.BROWSERS) {
+                        error &apos;No browsers selected for testing&apos;
+                    }
+                    if (!env.GREP_PATTERN) {
+                        echo &apos;No test patterns selected, will run all tests&apos;
+                    }
+                    // Log selected configuration
+                    echo &quot;Selected Browsers: ${env.BROWSERS}&quot;
+                    echo &quot;Test Pattern: ${env.GREP_PATTERN}&quot;
+                }
+            }
+        }
+
+        stage(&apos;Run Tests&apos;) { 
+            parallel {
+                stage(&apos;API Tests&apos;) {
+                    when { expression { params.RUN_API == true } }
+                    steps {
+                        script {
+                            sh &quot;&quot;&quot;
+                                docker run --rm \
+                                -v \${WORKSPACE}:/app \
+                                playwright-tests \
+                                npx playwright test tests/api --config=api.config.ts --grep &quot;${env.GREP_PATTERN}&quot;
+                            &quot;&quot;&quot;
+                        }
+                    }
+                }
+                stage(&apos;Visual Tests&apos;) {
+                    when { expression { params.RUN_VISUAL == true } }
+                    steps {
+                        script {
+                            env.BROWSERS.split(&apos;,&apos;).each { browser -&gt;
+                                sh &quot;&quot;&quot;
+                                    docker run --rm \
+                                    -v \${WORKSPACE}:/app \
+                                    playwright-tests \
+                                    npx playwright test tests/visual --config=visual.config.ts --grep &quot;${env.GREP_PATTERN}&quot; --project=${browser}
+                                &quot;&quot;&quot;
+                            }
+                        }
+                    }
+                }
+                stage(&apos;E2E Tests&apos;) {
+                    when { expression { params.RUN_E2E == true } }
+                    steps {
+                        script {
+                            env.BROWSERS.split(&apos;,&apos;).each { browser -&gt;
+                                sh &quot;&quot;&quot;
+                                    docker run --rm \
+                                    -v \${WORKSPACE}:/app \
+                                    playwright-tests \
+                                    npx playwright test tests/e2e --config=playwright.config.ts --grep &quot;${env.GREP_PATTERN}&quot; --project=${browser}
+                                &quot;&quot;&quot;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                try {
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: &apos;playwright-report&apos;,
+                        reportFiles: &apos;index.html&apos;,
+                        reportName: &apos;Playwright Report&apos;
+                    ])
+                    
+                    archiveArtifacts artifacts: &apos;playwright-report/**/*&apos;, fingerprint: true
+                } catch (Exception e) {
+                    echo &quot;Publishing failed: ${e.getMessage()}&quot;
+                }
+            }
+        }
+        failure {
+            script {
+                try {
+                    archiveArtifacts artifacts: &apos;test-results/**/*&apos;, fingerprint: true
+                } catch (Exception e) {
+                    echo &quot;Artifact archiving failed: ${e.getMessage()}&quot;
+                }
+            }
+        }
+    }
+}</script>
+    <loadedScripts class="linked-hash-map"/>
+    <durabilityHint>MAX_SURVIVABILITY</durabilityHint>
+    <timings class="map">
+      <entry>
+        <string>flowNode</string>
+        <long>745199530</long>
+      </entry>
+      <entry>
+        <string>classLoad</string>
+        <long>194841144</long>
+      </entry>
+      <entry>
+        <string>runQueue</string>
+        <long>8383233680</long>
+      </entry>
+      <entry>
+        <string>run</string>
+        <long>3895534886</long>
+      </entry>
+      <entry>
+        <string>parse</string>
+        <long>162738705</long>
+      </entry>
+      <entry>
+        <string>saveProgram</string>
+        <long>2496588782</long>
+      </entry>
+    </timings>
+    <internalCalls class="sorted-set">
+      <string>hudson.model.Result.fromString</string>
+      <string>org.jenkinsci.plugins.workflow.job.WorkflowRun.result</string>
+      <string>org.jenkinsci.plugins.workflow.steps.MissingContextVariableException.getMessage</string>
+    </internalCalls>
+    <sandbox>true</sandbox>
+    <iota>23</iota>
+    <head>1:23</head>
+    <done>true</done>
+    <resumeBlocked>false</resumeBlocked>
+    <storageDir>workflow-completed</storageDir>
+  </execution>
+  <completed>true</completed>
+  <checkouts class="hudson.util.PersistedList"/>
+</flow-build>

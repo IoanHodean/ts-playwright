@@ -1,0 +1,272 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1520.v56d65e3b_4566">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2255.v56a_15e805f12"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2255.v56a_15e805f12">
+      <jobProperties/>
+      <triggers/>
+      <parameters>
+        <string>RUN_CHROME</string>
+        <string>RUN_FIREFOX</string>
+        <string>RUN_VISUAL</string>
+        <string>RUN_API</string>
+        <string>RUN_E2E</string>
+        <string>RUN_SMOKE</string>
+        <string>RUN_WEBKIT</string>
+        <string>RUN_REGRESSION</string>
+      </parameters>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.BooleanParameterDefinition>
+          <name>RUN_SMOKE</name>
+          <description>Run smoke tests</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>RUN_REGRESSION</name>
+          <description>Run regression tests</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>RUN_API</name>
+          <description>Include API tests</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>RUN_VISUAL</name>
+          <description>Include visual regression tests</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>RUN_E2E</name>
+          <description>Include E2E tests</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>RUN_CHROME</name>
+          <description>Run tests in Chrome</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>RUN_FIREFOX</name>
+          <description>Run tests in Firefox</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>RUN_WEBKIT</name>
+          <description>Run tests in WebKit</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@4106.v7a_8a_8176d450">
+    <script>pipeline {
+    agent any
+
+    parameters {
+        // Test type parameters
+        booleanParam(name: &apos;RUN_SMOKE&apos;, defaultValue: true, description: &apos;Run smoke tests&apos;)
+        booleanParam(name: &apos;RUN_REGRESSION&apos;, defaultValue: false, description: &apos;Run regression tests&apos;)
+        booleanParam(name: &apos;RUN_API&apos;, defaultValue: true, description: &apos;Include API tests&apos;)
+        booleanParam(name: &apos;RUN_VISUAL&apos;, defaultValue: true, description: &apos;Include visual regression tests&apos;)
+        booleanParam(name: &apos;RUN_E2E&apos;, defaultValue: true, description: &apos;Include E2E tests&apos;)
+        
+        // Browser parameters
+        booleanParam(name: &apos;RUN_CHROME&apos;, defaultValue: true, description: &apos;Run tests in Chrome&apos;)
+        booleanParam(name: &apos;RUN_FIREFOX&apos;, defaultValue: false, description: &apos;Run tests in Firefox&apos;)
+        booleanParam(name: &apos;RUN_WEBKIT&apos;, defaultValue: false, description: &apos;Run tests in WebKit&apos;)
+    }
+
+    environment {
+        TEST_USER = credentials(&apos;test-user&apos;)
+        TEST_PASSWORD = credentials(&apos;test-password&apos;)
+        BASE_URL = credentials(&apos;base-url&apos;)
+        API_KEY = credentials(&apos;api-key&apos;)
+        // Use the host path directly for Docker volume mounting
+        HOST_PROJECT_PATH = &apos;/d/ts-playwright&apos;
+    }
+ 
+    stages {
+        stage(&apos;Setup&apos;) {
+            steps {
+                script {
+                    // Test tags helper
+                    def getTestTags = {
+                        def tags = []
+                        if (params.RUN_SMOKE) tags.add(&apos;@smoke&apos;)
+                        if (params.RUN_REGRESSION) tags.add(&apos;@regression&apos;)
+                        return tags.join(&apos;|&apos;)
+                    }
+
+                    // Browser selection helper
+                    def getSelectedBrowsers = {
+                        def browsers = []
+                        if (params.RUN_CHROME) browsers.add(&apos;Chrome&apos;)
+                        if (params.RUN_FIREFOX) browsers.add(&apos;Firefox&apos;)
+                        if (params.RUN_WEBKIT) browsers.add(&apos;Webkit&apos;)
+                        return browsers
+                    }
+
+                    // Store for use in other stages
+                    env.GREP_PATTERN = getTestTags()
+                    env.BROWSERS = getSelectedBrowsers().join(&apos;,&apos;)
+                }
+                
+                // Use Docker for setup with host path
+                script {
+                    sh &quot;&quot;&quot;
+                        docker run --rm \\
+                        -v ${env.HOST_PROJECT_PATH}:/app \\
+                        -w /app \\
+                        playwright-tests \\
+                        npm ci
+                    &quot;&quot;&quot;
+                }
+            }
+        }      
+
+        stage(&apos;Validate Environment&apos;) {
+            steps {
+                script {
+                    if (!env.BROWSERS) {
+                        error &apos;No browsers selected for testing&apos;
+                    }
+                    if (!env.GREP_PATTERN) {
+                        echo &apos;No test patterns selected, will run all tests&apos;
+                    }
+                    echo &quot;Selected Browsers: ${env.BROWSERS}&quot;
+                    echo &quot;Test Pattern: ${env.GREP_PATTERN}&quot;
+                }
+            }
+        }
+
+        stage(&apos;Run Tests&apos;) { 
+            parallel {
+                stage(&apos;API Tests&apos;) {
+                    when { expression { params.RUN_API == true } }
+                    steps {
+                        script {
+                            sh &quot;&quot;&quot;
+                                docker run --rm \\
+                                -v ${env.HOST_PROJECT_PATH}:/app \\
+                                -w /app \\
+                                -e TEST_USER=${env.TEST_USER} \\
+                                -e TEST_PASSWORD=${env.TEST_PASSWORD} \\
+                                -e BASE_URL=${env.BASE_URL} \\
+                                -e API_KEY=${env.API_KEY} \\
+                                playwright-tests \\
+                                npx playwright test tests/api --config=api.config.ts --grep &quot;${env.GREP_PATTERN}&quot;
+                            &quot;&quot;&quot;
+                        }
+                    }
+                }
+                stage(&apos;Visual Tests&apos;) {
+                    when { expression { params.RUN_VISUAL == true } }
+                    steps {
+                        script {
+                            env.BROWSERS.split(&apos;,&apos;).each { browser -&gt;
+                                sh &quot;&quot;&quot;
+                                    docker run --rm \\
+                                    -v ${env.HOST_PROJECT_PATH}:/app \\
+                                    -w /app \\
+                                    -e TEST_USER=${env.TEST_USER} \\
+                                    -e TEST_PASSWORD=${env.TEST_PASSWORD} \\
+                                    -e BASE_URL=${env.BASE_URL} \\
+                                    -e API_KEY=${env.API_KEY} \\
+                                    playwright-tests \\
+                                    npx playwright test tests/visual --config=visual.config.ts --grep &quot;${env.GREP_PATTERN}&quot; --project=${browser}
+                                &quot;&quot;&quot;
+                            }
+                        }
+                    }
+                }
+                stage(&apos;E2E Tests&apos;) {
+                    when { expression { params.RUN_E2E == true } }
+                    steps {
+                        script {
+                            env.BROWSERS.split(&apos;,&apos;).each { browser -&gt;
+                                sh &quot;&quot;&quot;
+                                    docker run --rm \\
+                                    -v ${env.HOST_PROJECT_PATH}:/app \\
+                                    -w /app \\
+                                    -e TEST_USER=${env.TEST_USER} \\
+                                    -e TEST_PASSWORD=${env.TEST_PASSWORD} \\
+                                    -e BASE_URL=${env.BASE_URL} \\
+                                    -e API_KEY=${env.API_KEY} \\
+                                    playwright-tests \\
+                                    npx playwright test tests/e2e --config=playwright.config.ts --grep &quot;${env.GREP_PATTERN}&quot; --project=${browser}
+                                &quot;&quot;&quot;
+                            }
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    // Copy reports from host to workspace for Jenkins to access
+                    script {
+                        try {
+                            sh &quot;&quot;&quot;
+                                docker run --rm \\
+                                -v ${env.HOST_PROJECT_PATH}:/app \\
+                                -v ${env.WORKSPACE}:/workspace \\
+                                -w /app \\
+                                playwright-tests \\
+                                sh -c &quot;cp -r playwright-report /workspace/ 2&gt;/dev/null || true; cp -r test-results /workspace/ 2&gt;/dev/null || true&quot;
+                            &quot;&quot;&quot;
+                            
+                            publishHTML([
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: true,
+                                keepAll: true,
+                                reportDir: &apos;playwright-report&apos;,
+                                reportFiles: &apos;index.html&apos;,
+                                reportName: &apos;Playwright Report&apos;,
+                                reportTitles: &apos;&apos;,
+                                escapeUnderscores: false,
+                                includes: &apos;**/*&apos;
+                            ])
+                            
+                            archiveArtifacts artifacts: &apos;playwright-report/**/*&apos;, fingerprint: true
+                        } catch (Exception e) {
+                            echo &quot;Publishing failed: ${e.getMessage()}&quot;
+                        }
+                    }
+                }
+                failure {
+                    script {
+                        try {
+                            archiveArtifacts artifacts: &apos;test-results/**/*&apos;, fingerprint: true
+                        } catch (Exception e) {
+                            echo &quot;Test results archiving failed: ${e.getMessage()}&quot;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo &apos;Pipeline completed!&apos;
+        }
+        success {
+            echo &apos;✅ All tests passed!&apos;
+        }
+        failure {
+            echo &apos;❌ Some tests failed!&apos;
+        }
+    }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

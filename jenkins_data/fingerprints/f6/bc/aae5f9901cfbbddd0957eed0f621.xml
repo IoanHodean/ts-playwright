@@ -1,0 +1,17 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<fingerprint>
+  <timestamp>2025-05-28 09:22:56.803 UTC</timestamp>
+  <original>
+    <name>Playwright-Tests</name>
+    <number>17</number>
+  </original>
+  <md5sum>f6bcaae5f9901cfbbddd0957eed0f621</md5sum>
+  <fileName>index.html</fileName>
+  <usages>
+    <entry>
+      <string>Playwright-Tests</string>
+      <ranges>17</ranges>
+    </entry>
+  </usages>
+  <facets/>
+</fingerprint>

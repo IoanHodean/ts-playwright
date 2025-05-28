@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'NodeJS18'  // Match the exact name from Jenkins configuration
-    }
-
     parameters {
         // Test type parameters
         booleanParam(name: 'RUN_SMOKE', defaultValue: true, description: 'Run smoke tests')
@@ -13,7 +9,7 @@ pipeline {
         booleanParam(name: 'RUN_VISUAL', defaultValue: true, description: 'Include visual regression tests')
         booleanParam(name: 'RUN_E2E', defaultValue: true, description: 'Include E2E tests')
         
-        // Browser parameters (single instance)
+        // Browser parameters
         booleanParam(name: 'RUN_CHROME', defaultValue: true, description: 'Run tests in Chrome')
         booleanParam(name: 'RUN_FIREFOX', defaultValue: false, description: 'Run tests in Firefox')
         booleanParam(name: 'RUN_WEBKIT', defaultValue: false, description: 'Run tests in WebKit')
@@ -24,6 +20,8 @@ pipeline {
         TEST_PASSWORD = credentials('test-password')
         BASE_URL = credentials('base-url')
         API_KEY = credentials('api-key')
+        // Use the host path directly for Docker volume mounting
+        HOST_PROJECT_PATH = '/d/ts-playwright'
     }
  
     stages {
@@ -52,13 +50,16 @@ pipeline {
                     env.BROWSERS = getSelectedBrowsers().join(',')
                 }
                 
-                // Clean workspace
-                bat 'if exist node_modules (rmdir /s /q node_modules)'
-                
-                // Install dependencies
-                bat 'npm ci'
-                bat 'npx playwright install'
-                bat 'npx playwright install-deps'
+                // Use Docker for setup with host path
+                script {
+                    sh """
+                        docker run --rm \\
+                        -v ${env.HOST_PROJECT_PATH}:/app \\
+                        -w /app \\
+                        playwright-tests \\
+                        npm ci
+                    """
+                }
             }
         }      
 
@@ -71,7 +72,6 @@ pipeline {
                     if (!env.GREP_PATTERN) {
                         echo 'No test patterns selected, will run all tests'
                     }
-                    // Log selected configuration
                     echo "Selected Browsers: ${env.BROWSERS}"
                     echo "Test Pattern: ${env.GREP_PATTERN}"
                 }
@@ -84,19 +84,36 @@ pipeline {
                     when { expression { params.RUN_API == true } }
                     steps {
                         script {
-                            env.BROWSERS.split(',').each { browser ->
-                                bat "npx playwright test tests/api --config=api.config.ts --grep \"${env.GREP_PATTERN}\""
-                            }
+                            sh """
+                                docker run --rm \\
+                                -v ${env.HOST_PROJECT_PATH}:/app \\
+                                -w /app \\
+                                -e TEST_USER=${env.TEST_USER} \\
+                                -e TEST_PASSWORD=${env.TEST_PASSWORD} \\
+                                -e BASE_URL=${env.BASE_URL} \\
+                                -e API_KEY=${env.API_KEY} \\
+                                playwright-tests \\
+                                npx playwright test tests/api --config=api.config.ts --grep "${env.GREP_PATTERN}"
+                            """
                         }
                     }
                 }
-                // Single script block per test type
                 stage('Visual Tests') {
                     when { expression { params.RUN_VISUAL == true } }
                     steps {
                         script {
                             env.BROWSERS.split(',').each { browser ->
-                                bat "npx playwright test tests/visual --config=visual.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
+                                sh """
+                                    docker run --rm \\
+                                    -v ${env.HOST_PROJECT_PATH}:/app \\
+                                    -w /app \\
+                                    -e TEST_USER=${env.TEST_USER} \\
+                                    -e TEST_PASSWORD=${env.TEST_PASSWORD} \\
+                                    -e BASE_URL=${env.BASE_URL} \\
+                                    -e API_KEY=${env.API_KEY} \\
+                                    playwright-tests \\
+                                    npx playwright test tests/visual --config=visual.config.ts --grep "${env.GREP_PATTERN}" --project=${browser}
+                                """
                             }
                         }
                     }
@@ -106,8 +123,60 @@ pipeline {
                     steps {
                         script {
                             env.BROWSERS.split(',').each { browser ->
-                                bat "npx playwright test tests/e2e --config=playwright.config.ts --grep \"${env.GREP_PATTERN}\" --project=${browser}"
+                                sh """
+                                    docker run --rm \\
+                                    -v ${env.HOST_PROJECT_PATH}:/app \\
+                                    -w /app \\
+                                    -e TEST_USER=${env.TEST_USER} \\
+                                    -e TEST_PASSWORD=${env.TEST_PASSWORD} \\
+                                    -e BASE_URL=${env.BASE_URL} \\
+                                    -e API_KEY=${env.API_KEY} \\
+                                    playwright-tests \\
+                                    npx playwright test tests/e2e --config=playwright.config.ts --grep "${env.GREP_PATTERN}" --project=${browser}
+                                """
                             }
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    // Copy reports from host to workspace for Jenkins to access
+                    script {
+                        try {
+                            sh """
+                                docker run --rm \\
+                                -v ${env.HOST_PROJECT_PATH}:/app \\
+                                -v ${env.WORKSPACE}:/workspace \\
+                                -w /app \\
+                                playwright-tests \\
+                                sh -c "cp -r playwright-report /workspace/ 2>/dev/null || true; cp -r test-results /workspace/ 2>/dev/null || true"
+                            """
+                            
+                            publishHTML([
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: true,
+                                keepAll: true,
+                                reportDir: 'playwright-report',
+                                reportFiles: 'index.html',
+                                reportName: 'Playwright Report',
+                                reportTitles: '',
+                                escapeUnderscores: false,
+                                includes: '**/*'
+                            ])
+                            
+                            archiveArtifacts artifacts: 'playwright-report/**/*', fingerprint: true
+                        } catch (Exception e) {
+                            echo "Publishing failed: ${e.getMessage()}"
+                        }
+                    }
+                }
+                failure {
+                    script {
+                        try {
+                            archiveArtifacts artifacts: 'test-results/**/*', fingerprint: true
+                        } catch (Exception e) {
+                            echo "Test results archiving failed: ${e.getMessage()}"
                         }
                     }
                 }
@@ -117,19 +186,13 @@ pipeline {
 
     post {
         always {
-            publishHTML([
-                allowMissing: false,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'playwright-report',
-                reportFiles: 'index.html',
-                reportName: 'Playwright Report'
-            ])
-            
-            archiveArtifacts artifacts: 'playwright-report/**/*', fingerprint: true
+            echo 'Pipeline completed!'
+        }
+        success {
+            echo '✅ All tests passed!'
         }
         failure {
-            archiveArtifacts artifacts: 'test-results/**/*', fingerprint: true
+            echo '❌ Some tests failed!'
         }
     }
 }
