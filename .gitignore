@@ -17,7 +17,16 @@ jenkins.war
 jenkins.log
 .jenkins/
 jenkins_home/
+jenkins_data/
 workspace/
+
+# Docker & Jenkins Setup
+jenkins_test_setup/
+jenkins-local.yml
+jenkins-simple.yml
+Dockerfile.jenkins
+docker-compose.yml
+.dockerignore
 
 # Build outputs
 dist/
@@ -56,5 +65,12 @@ Thumbs.db
 screenshots/
 videos/
 trace.zip
+
+# Allure Reports
+allure-report/
+allure-results/
+
+# Temporary directories
+~/
 
 k6-tests
