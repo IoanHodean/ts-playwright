@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  playwright:
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+      - ./allure-results:/app/allure-results
+  jenkins:
+    image: jenkins/jenkins:lts
+    ports:
+      - 8080:8080
+    container_name: jenkins_local
+    volumes:
+      - ./jenkins_data:/var/jenkins_home 

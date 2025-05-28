@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out code...'
+                checkout scm
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("playwright-tests:${env.BUILD_ID}")
+                }
+            }
+        }
+        
+        stage('Run Tests') {
+            steps {
+                script {
+                    docker.image("playwright-tests:${env.BUILD_ID}").inside {
+                        sh 'npx playwright test'
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
+        }
+    }
+} 
