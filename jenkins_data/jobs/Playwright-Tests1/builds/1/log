@@ -1,0 +1,10 @@
+Started by user [8mha:////4Fi72FRHFOYC9U+A4s2fMtTpHnMcQ6oKPF90YFR17v7AAAAAlx+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzWEgZu/dLi1CL9xJTczDwAj6GcLcAAAAA=[0madmin
+Lightweight checkout support not available, falling back to full checkout.
+Checking out git into /var/jenkins_home/workspace/Playwright-Tests1@script/983191dba7e2e19bc9fbb2358ac0714ef1f1547fccc266d41669023e4acd7431 to read Jenkinsfile
+Seen 0 remote branches
+ > git show-ref --tags -d # timeout=10
+ERROR: Couldn't find any revision to build. Verify the repository and branch configuration for this job.
+ERROR: Maximum checkout retry attempts reached, aborting
+ERROR: Couldn't find any revision to build. Verify the repository and branch configuration for this job.
+ERROR: Maximum checkout retry attempts reached, aborting
+Finished: FAILURE
